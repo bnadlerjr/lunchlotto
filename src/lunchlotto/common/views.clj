@@ -64,9 +64,19 @@
      (bootstrap-css-cdn bootstrap-version)]
 
     [:body
-     body
+     [:div.container
+      body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)
      (bootstrap-js-cdn bootstrap-version)
      (bootstrap-js-local-fallback bootstrap-version)
-     (bootstrap-css-local-fallback bootstrap-version)]))
+     (bootstrap-css-local-fallback bootstrap-version)
+     (include-js "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places")
+     (include-js "/lunchlotto.js")]))
+
+(defn home-page
+  "Home page of the application."
+  [flash]
+  (layout
+    (when-not (nil? flash) [:div {:class "alert alert-info"} (str flash)])
+    [:p "Hi!"]))

@@ -5,8 +5,10 @@
             [compojure.core :refer [routes]]
             [environ.core :refer [env]]
             [prone.middleware :refer [wrap-exceptions]])
-  (:require [lunchlotto.common.handlers :refer [common-routes]]
-            [lunchlotto.common.middleware :refer [wrap-simulated-methods]]))
+  (:require [lunchlotto.migrations :as migrations]
+            [lunchlotto.common.handlers :refer [common-routes]]
+            [lunchlotto.auth.handlers :refer [auth-routes]]
+            [lunchlotto.common.middleware :as middleware]))
 
 (def debug-mode? (env :debug false))
 
@@ -15,14 +17,17 @@
 
 (def application
   (wrap-defaults
-    (cond->
-      (routes common-routes)
-      wrap-simulated-methods
-      debug-mode? wrap-exceptions
-      debug-mode? wrap-reload)
+    (-> (routes auth-routes common-routes)
+        middleware/wrap-content-type-html
+        (cond->
+          debug-mode? wrap-exceptions
+          debug-mode? wrap-reload))
     application-defaults))
 
 (defn -main [port]
+  (try (migrations/-main (env :database-url))
+       (catch Exception e
+         (println (.getMessage e))))
   (run-server application {:port (Integer. port)})
   (println (str "Server started on port " port))
   (println (str "Debug enabled: " debug-mode?)))
