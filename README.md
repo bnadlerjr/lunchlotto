@@ -4,10 +4,10 @@ Lunch with a random co-worker.
 ## Overview
 The idea for this web application came from a conversation with two former
 co-workers. Our developers are distributed between the home office and various
-clients. Other than quarterly meetings, it can be rare to see co-workers and
-share experiences. This app attempts to help that situation by scheduling
-lunches with random co-workers at various locations that are convenient to both
-people.
+clients across New York City. Other than quarterly meetings, it can be rare to
+see co-workers and share experiences. This app attempts to help that situation
+by scheduling lunches with random co-workers at various locations that are
+convenient to both people.
 
 ## Features
 
