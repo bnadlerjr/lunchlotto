@@ -12,8 +12,13 @@
                  [hiccup "1.0.5"]
                  [http-kit "2.1.19"]
                  [java-jdbc/dsl "0.1.1"]
+                 [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
+                                                    javax.jms/jms
+                                                    com.sun.jdmk/jmxtools
+                                                    com.sun.jmx/jmxri]]
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/java.jdbc "0.3.6"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [pandect "0.5.0"]
                  [postgresql/postgresql "9.1-901-1.jdbc4"]
                  [ring "1.3.2"]

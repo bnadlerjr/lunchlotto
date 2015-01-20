@@ -2,7 +2,8 @@
   (:require [prone.debug :refer [debug]])
   (:require [compojure.core :refer [GET POST PUT routes]]
             [ring.util.response :as ring]
-            [environ.core :refer [env]])
+            [environ.core :refer [env]]
+            [clojure.tools.logging :as log])
   (:require [lunchlotto.auth.models :as models]
             [lunchlotto.auth.validations :as val]
             [lunchlotto.auth.views :as views]
@@ -60,7 +61,7 @@
           :else
           (let [token (models/register-user db (:email data))]
             (if (env :debug false)
-              (println (str "Your token is: " token))
+              (log/debug "Your token is:" token)
               ;; else send email
               )
             (redirect-with-flash "/" "You're almost done! You've just been an email that contains a confirmation link. Click the link in the email to complete your registration.")))))
@@ -72,7 +73,7 @@
     (if valid?
       (let [token (models/update-confirmation-token db (:email data))]
         (if (env :debug false)
-          (println (str "Your updated token is: " token))
+          (log/debug "Your updated token is:" token)
           ;; else send email
           )
         (redirect-with-flash "/" "You're almost done! You've just been an email that contains a confirmation link. Click the link in the email to complete your registration."))
