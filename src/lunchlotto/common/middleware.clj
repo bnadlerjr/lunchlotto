@@ -1,9 +1,7 @@
 (ns lunchlotto.common.middleware
   (:require [clojure.string :as s]
             [clojure.tools.logging :as log]
-            [ring.util.response :as ring]
-            [clj-time.core :as time]
-            [clj-time.format :as tformat])
+            [ring.util.response :as ring])
   (:import (java.util UUID)))
 
 (def sim-methods {"PUT" :put "DELETE" :delete})
@@ -23,15 +21,26 @@
   [hdlr]
   (fn [req]
     (let [start (System/currentTimeMillis)
-          method (s/upper-case (name (:request-method req)))
-          url (str (:uri req)
-                   (if-let [query-string (:query-string req)]
-                     (str "?" query-string)))]
-      (log/info "Started" method (str "'" url "'") "for" (:server-name req))
+          req-id (get-in req [:headers "x-request-id"])
+          to-keypair-strings (fn [[k v]] (str (name k) "=" v))
+          req-attrs {:method (s/upper-case (name (:request-method req)))
+                     :url (str (:uri req)
+                               (if-let [query-string (:query-string req)]
+                                 (str "?" query-string)))
+                     :params (:params req)
+                     :host (:server-name req)
+                     :protocol (s/upper-case (name (:scheme req)))}]
+      (log/info (str
+                  (format "[%s] RING Starting " req-id)
+                  (s/join " " (map to-keypair-strings req-attrs))))
       (let [resp (hdlr req)
-            finish (System/currentTimeMillis)
-            total (- finish start)]
-        (log/info "Completed" (:status resp) "in" (str total "ms"))
+            resp-attrs {:status (:status resp)
+                        :duration-ms (- (System/currentTimeMillis) start)}]
+        (log/info (str
+                    (format "[%s] RING Finished " req-id)
+                    (s/join " " (map to-keypair-strings resp-attrs))
+                    (if-let [location (get-in resp [:headers "Location"])]
+                      (str " redirect-to=" location))))
         resp))))
 
 (defn wrap-content-type-html
