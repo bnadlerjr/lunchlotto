@@ -21,6 +21,7 @@
     (-> (routes auth-routes common-routes)
         middleware/wrap-content-type-html
         middleware/wrap-logger
+        middleware/wrap-request-id
         (cond->
           debug-mode? wrap-exceptions
           debug-mode? wrap-reload))
