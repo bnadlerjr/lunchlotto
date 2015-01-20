@@ -1,5 +1,9 @@
 (ns lunchlotto.common.middleware
-  (:require [ring.util.response :as ring]))
+  (:require [clojure.string :as s]
+            [clojure.tools.logging :as log]
+            [ring.util.response :as ring]
+            [clj-time.core :as time]
+            [clj-time.format :as tformat]))
 
 (def sim-methods {"PUT" :put "DELETE" :delete})
 
@@ -12,6 +16,22 @@
                          (sim-methods (get-in req [:params "_method"])))]
       (hdlr (assoc req :request-method method))
       (hdlr req))))
+
+(defn wrap-logger
+  "Logs requests using clojure.tools.logging."
+  [hdlr]
+  (fn [req]
+    (let [start (System/currentTimeMillis)
+          method (s/upper-case (name (:request-method req)))
+          url (str (:uri req)
+                   (if-let [query-string (:query-string req)]
+                     (str "?" query-string)))]
+      (log/info "Started" method (str "'" url "'") "for" (:server-name req))
+      (let [resp (hdlr req)
+            finish (System/currentTimeMillis)
+            total (- finish start)]
+        (log/info "Completed" (:status resp) "in" (str total "ms"))
+        resp))))
 
 (defn wrap-content-type-html
   "The Ring defaults library provides a middleware for wrapping the content
