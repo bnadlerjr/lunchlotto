@@ -1,6 +1,8 @@
 # Lunch Lotto
 Lunch with a random co-worker.
 
+[![Build Status](https://travis-ci.org/bnadlerjr/lunchlotto.png)](https://travis-ci.org/bnadlerjr/lunchlotto)
+
 ## Overview
 The idea for this web application came from a conversation with two former
 co-workers. Our developers are distributed between the home office and various
