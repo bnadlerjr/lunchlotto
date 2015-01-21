@@ -37,10 +37,11 @@
         (is (contains (:body resp) "Re-send Confirmation Email")))))
 
   (testing "invalid email format"
-    (let [resp (handlers/register-user {:email "foo@example.com"})]
-      (is (= 400 (:status resp)))
-      (is (contains (:body resp) "Register New User"))
-      (is (contains (:body resp) "email must be from the cyrusinnovation.com domain")))))
+    (with-redefs [models/find-user-by-email (fn [_ _] nil)]
+      (let [resp (handlers/register-user {:email "foo@example.com"})]
+        (is (= 400 (:status resp)))
+        (is (contains (:body resp) "Register New User"))
+        (is (contains (:body resp) "email must be from the cyrusinnovation.com domain"))))))
 
 (deftest show-confirmation-page
   (testing "with valid confirmation token"
