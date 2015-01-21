@@ -21,6 +21,7 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [pandect "0.5.0"]
                  [postgresql/postgresql "9.3-1102.jdbc41"]
+                 [prone "0.8.0"]
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.3"]]
   :min-lein-version "2.0.0"
@@ -28,8 +29,7 @@
   :main lunchlotto.app
   :profiles {:dev {:env {:database-url "jdbc:postgresql://localhost/lunchlotto"
                          :debug true}
-                   :dependencies [[ring/ring-mock "0.2.0"]
-                                  [prone "0.8.0"]]}
+                   :dependencies [[ring/ring-mock "0.2.0"]]}
              :test {:env {:database-url "jdbc:postgresql://localhost/lunchlotto_test"}}}
   :plugins [[lein-environ "1.0.0"]
             [lein-ancient "0.6.1"]

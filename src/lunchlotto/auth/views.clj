@@ -1,5 +1,4 @@
 (ns lunchlotto.auth.views
-  (:require [prone.debug :refer [debug]])
   (:require [hiccup.form :as f]
             [ring.util.anti-forgery :as ring])
   (:require [lunchlotto.common.views :refer [layout]]))

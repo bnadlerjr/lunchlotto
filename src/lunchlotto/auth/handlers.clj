@@ -1,5 +1,4 @@
 (ns lunchlotto.auth.handlers
-  (:require [prone.debug :refer [debug]])
   (:require [compojure.core :refer [GET POST PUT routes]]
             [ring.util.response :as ring]
             [environ.core :refer [env]]
