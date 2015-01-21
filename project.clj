@@ -20,7 +20,7 @@
                  [org.clojure/java.jdbc "0.3.6"]
                  [org.clojure/tools.logging "0.3.1"]
                  [pandect "0.5.0"]
-                 [postgresql/postgresql "9.1-901-1.jdbc4"]
+                 [postgresql/postgresql "9.3-1102.jdbc41"]
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.3"]]
   :min-lein-version "2.0.0"
@@ -32,7 +32,7 @@
                                   [prone "0.8.0"]]}
              :test {:env {:database-url "jdbc:postgresql://localhost/lunchlotto_test"}}}
   :plugins [[lein-environ "1.0.0"]
-            [lein-ancient "0.5.5"]
+            [lein-ancient "0.6.1"]
             [lein-kibit "0.0.8"]
             [jonase/eastwood "0.2.1"]
             [lein-bikeshed "0.2.0"]]

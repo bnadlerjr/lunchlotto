@@ -2,6 +2,7 @@
 Lunch with a random co-worker.
 
 [![Build Status](https://travis-ci.org/bnadlerjr/lunchlotto.png)](https://travis-ci.org/bnadlerjr/lunchlotto)
+[![Dependencies Status](http://jarkeeper.com/bnadlerjr/lunchlotto/status.svg)](http://jarkeeper.com/bnadlerjr/lunchlotto)
 
 ## Overview
 The idea for this web application came from a conversation with two former
