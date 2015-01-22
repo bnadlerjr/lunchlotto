@@ -25,6 +25,7 @@
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.3"]]
   :min-lein-version "2.0.0"
+  :java-agents [[com.newrelic.agent.java/newrelic-agent "3.13.0"]]
   :uberjar-name "lunchlotto.jar"
   :main lunchlotto.app
   :profiles {:dev {:env {:database-url "jdbc:postgresql://localhost/lunchlotto"
