@@ -3,6 +3,14 @@
             [ring.util.anti-forgery :as ring])
   (:require [lunchlotto.common.views :refer [layout]]))
 
+(defn- make-field [func name {:keys [:label :value :error :description :opts]}]
+  [:div.form-group
+   {:class (when error "has-error")}
+   (f/label {:class "control-label"} name label)
+   (when description [:p description])
+   (func (merge {:id name :class "form-control" :value value} opts) name)
+   (when error [:span.help-block error])])
+
 (defn register-page
   "User registration page."
   [params]
@@ -14,11 +22,10 @@
       (f/form-to
         [(:method options) "/register"]
         (ring/anti-forgery-field)
-        [:div.form-group
-         {:class (when (get-in params [:errors :email]) "has-error")}
-         (f/label {:class "control-label"} "email" "Cyrus Email")
-         (f/text-field {:id "email" :class "form-control" :value (:email params) :required true :autofocus true} "email")
-         (when-let [errors (get-in params [:errors :email])] [:span.help-block errors])]
+        (make-field f/text-field "email" {:label "Cyrus Email"
+                                          :error (get-in params [:errors :email])
+                                          :value (:email params)
+                                          :opts {:required true :autofocus true}})
 
         [:div.form-group
          (f/submit-button {:class "btn btn-primary"} (:button-text options))]))))
@@ -33,24 +40,19 @@
     (f/form-to [:post "/confirm"]
                (ring/anti-forgery-field)
 
-               [:div.form-group
-                {:class (when (get-in params [:errors :password]) "has-error")}
-                (f/label {:class "control-label"} "password" "Password")
-                (f/password-field {:id "password" :class "form-control" :required true :autofocus true} "password")
-                (when-let [errors (get-in params [:errors :password])] [:span.help-block errors])]
+               (make-field f/password-field "password" {:label "Password"
+                                                        :error (get-in params [:errors :password])
+                                                        :value (:password params)
+                                                        :opts {:required true :autofocus true}})
 
-               [:div.form-group
-                {:class (when (get-in params [:errors :password_confirmation]) "has-error")}
-                (f/label {:class "control-label"} "password_confirmation" "Retype Password")
-                (f/password-field {:id "password_confirmation" :class "form-control" :required true} "password_confirmation")
-                (when-let [errors (get-in params [:errors :password_confirmation])] [:span.help-block errors])]
+               (make-field f/password-field "password_confirmation" {:label "Retype Password"
+                                                                     :error (get-in params [:errors :password_confirmation])
+                                                                     :opts {:required true}})
 
-               [:div.form-group
-                {:class (when (get-in params [:errors :location]) "has-error")}
-                (f/label {:class "control-label"} "location" "Enter your location")
-                [:p "In order to recommend lunches with people near you, we need to know your location. You can always change it later."]
-                (f/text-field {:id "location" :class "form-control" :value (:location params)} "location")
-                (when-let [errors (get-in params [:errors :location])] [:span.help-block errors])]
+               (make-field f/text-field "location" {:label "Location"
+                                                    :error (get-in params [:errors :location])
+                                                    :value (:location params)
+                                                    :description "In order to recommend lunches with people near you, we need to know your location. You can always change it later."})
 
                (f/hidden-field {:id "confirmation_token" :value (:confirmation_token params)} "confirmation_token")
                (f/hidden-field {:id "latitude" :value (:latitude params)} "latitude")
