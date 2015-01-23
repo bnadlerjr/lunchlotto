@@ -1,5 +1,6 @@
 (ns lunchlotto.auth.views
   (:require [hiccup.form :as f]
+            [hiccup.element :as e]
             [ring.util.anti-forgery :as ring])
   (:require [lunchlotto.common.views :refer [layout]]))
 
@@ -60,3 +61,20 @@
 
                [:div.form-group
                 (f/submit-button {:class "btn btn-primary"} "Finish Registration")])))
+
+(defn login-page
+  "Allows user to login."
+  [& flash]
+  (layout
+    (when-not (nil? flash) [:div {:class "alert alert-info"} flash])
+    [:h2 "Login"]
+    [:p "New here? " (e/link-to "/register" "Register") " for an account."]
+    (f/form-to [:post "/login"]
+               (ring/anti-forgery-field)
+               (make-field f/text-field "username" {:label "Email"
+                                                    :opts {:required true :autofocus true}})
+
+               (make-field f/password-field "password" {:label "Password"})
+
+               [:div.form-group
+                (f/submit-button {:class "btn btn-primary"} "Login")])))

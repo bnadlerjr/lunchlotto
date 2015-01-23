@@ -9,6 +9,7 @@
                  [crypto-password "0.1.3"]
                  [crypto-random "1.2.0"]
                  [environ "1.0.0"]
+                 [com.cemerick/friend "0.2.1"]
                  [hiccup "1.0.5"]
                  [http-kit "2.1.19"]
                  [java-jdbc/dsl "0.1.1"]

@@ -4,13 +4,14 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [compojure.core :refer [routes]]
             [environ.core :refer [env]]
-            [prone.middleware :refer [wrap-exceptions]])
+            [prone.middleware :refer [wrap-exceptions]]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]))
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.handlers :refer [common-routes]]
-            [lunchlotto.auth.handlers :refer [auth-routes]]
+            [lunchlotto.auth.handlers :refer [auth-routes authenticate failed-login]]
             [lunchlotto.common.logging :as logging]
-            [lunchlotto.common.middleware :as middleware]
-            [lunchlotto.common.utils :as utils]))
+            [lunchlotto.common.middleware :as middleware]))
 
 (def debug-mode? (env :debug false))
 
@@ -19,7 +20,14 @@
 
 (def application
   (wrap-defaults
-    (-> (routes auth-routes common-routes)
+    (-> (friend/authenticate
+          (routes auth-routes common-routes)
+          {:allow-anon true
+           :login-uri "/login"
+           :login-failure-handler failed-login
+           :default-landing-uri "/"
+           :credential-fn authenticate
+           :workflows [(workflows/interactive-form)]})
         middleware/wrap-content-type-html
         middleware/wrap-logger
         middleware/wrap-request-id

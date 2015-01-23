@@ -7,7 +7,8 @@
             [lunchlotto.auth.validations :as val]
             [lunchlotto.auth.views :as views]
             [lunchlotto.common.logging :as logging]
-            [lunchlotto.common.utils :as utils]))
+            [lunchlotto.common.utils :as utils]
+            [lunchlotto.auth.utils :as auth-utils]))
 
 (def db (env :database-url))
 
@@ -18,6 +19,11 @@
   "Show the new user registration page."
   [req]
   (respond-with/ok (views/register-page (:params req))))
+
+(defn show-login-page
+  "Show the user login page."
+  [req]
+  (respond-with/ok (views/login-page)))
 
 (defn show-confirmation-page
   "Retrieve the user based on the confirmation token and render the
@@ -83,10 +89,24 @@
         (respond-with/redirect "/" (t [:flash :registered])))
       (respond-with/bad-request (views/confirmation-page data)))))
 
+(defn authenticate
+  "Authenticates a user with the given username (email) and password."
+  [{:keys [username password]}]
+  (let [user (models/find-user-by-email db username)]
+    (when (and user
+               (auth-utils/check-password password (:password user)))
+      (assoc user :username username
+                  :roles #{::user}))))
+
+(defn failed-login
+  [req]
+  (respond-with/bad-request (views/login-page (t [:flash :invalid-creds]))))
+
 (def auth-routes
   (routes
     (GET "/register" [] show-registration-page)
     (POST "/register" {params :params} (register-user params))
     (PUT "/register" [] update-confirmation-token)
     (GET "/confirm" [] show-confirmation-page)
-    (POST "/confirm" {params :params} (confirm-user params))))
+    (POST "/confirm" {params :params} (confirm-user params))
+    (GET "/login" [] show-login-page)))
