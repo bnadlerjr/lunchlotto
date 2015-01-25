@@ -6,6 +6,7 @@
             [lunchlotto.common.responses :as respond-with]
             [lunchlotto.auth.validations :as val]
             [lunchlotto.auth.views :as views]
+            [lunchlotto.common.logging :as logging]
             [lunchlotto.common.utils :as utils]))
 
 (def db (env :database-url))
@@ -50,7 +51,7 @@
           :else
           (let [token (models/register-user db (:email data))]
             (if (env :debug false)
-              (log/debug "Your token is:" token)
+              (logging/debug (str "Your token is:" token))
               ;; else send email
               )
             (respond-with/redirect "/" (t [:flash :confirmation-sent]))))))
@@ -62,7 +63,7 @@
     (if valid?
       (let [token (models/update-confirmation-token db (:email data))]
         (if (env :debug false)
-          (log/debug "Your updated token is:" token)
+          (logging/debug (str "Your updated token is:" token))
           ;; else send email
           )
         (respond-with/redirect "/" (t [:flash :confirmation-sent])))

@@ -1,7 +1,7 @@
 (ns lunchlotto.common.middleware
   (:require [clojure.string :as s]
             [ring.util.response :as ring]
-            [lunchlotto.common.utils :as utils])
+            [lunchlotto.common.logging :as logging])
   (:import (java.util UUID)))
 
 (def sim-methods {"PUT" :put "DELETE" :delete})
@@ -32,13 +32,13 @@
                      :at "info"
                      :request_id req-id}]
 
-      (utils/info "Starting Ring request" req-attrs)
+      (logging/info "Starting Ring request" req-attrs)
       (let [resp (hdlr req)
             resp-attrs {:status (:status resp)
                         :msg "Finished Ring request"
                         :duration (str (- (System/currentTimeMillis) start) "ms")
                         :request_id req-id}]
-        (utils/info "Finished Ring request"
+        (logging/info "Finished Ring request"
              (if-let [location (get-in resp [:headers "Location"])]
                (assoc resp-attrs :location location)
                resp-attrs))

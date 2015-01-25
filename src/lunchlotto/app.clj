@@ -8,6 +8,7 @@
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.handlers :refer [common-routes]]
             [lunchlotto.auth.handlers :refer [auth-routes]]
+            [lunchlotto.common.logging :as logging]
             [lunchlotto.common.middleware :as middleware]
             [lunchlotto.common.utils :as utils]))
 
@@ -30,7 +31,7 @@
 (defn -main [port]
   (try (migrations/-main (env :database-url))
        (catch Exception e
-         (utils/error (.getMessage e))))
+         (logging/error (.getMessage e))))
   (run-server application {:port (Integer. port)})
-  (utils/info "Server started" {:port port
+  (logging/info "Server started" {:port port
                                 :debug debug-mode?}))
