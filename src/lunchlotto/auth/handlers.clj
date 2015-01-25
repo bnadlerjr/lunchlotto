@@ -10,6 +10,9 @@
 
 (def db (env :database-url))
 
+(def t (utils/make-translation-dictionary
+         "resources/translations.edn" :en :auth))
+
 (defn show-registration-page
   "Show the new user registration page."
   [req]
@@ -23,7 +26,7 @@
         user (models/find-user-by-confirmation-token db token)]
     (if user
       (respond-with/ok (views/confirmation-page (:params req)))
-      (respond-with/redirect "/" "Invalid confirmation token."))))
+      (respond-with/redirect "/" (t [:flash :invalid-token])))))
 
 (defn register-user
   "Register a new user. Sends an email with a password token to the email
@@ -37,20 +40,20 @@
           (respond-with/bad-request (views/register-page data))
 
           (and user (:is_confirmed user))
-          (respond-with/redirect "/" "That email has already been used. Please login.")
+          (respond-with/redirect "/" (t [:flash :email-used]))
 
           (and user (not (:is_confirmed user)))
-          (respond-with/ok (views/register-page
-                           (assoc data
-                             :errors {:email             "email has already been used."
-                                      :can_resend_token? true})))
+          (respond-with/ok
+            (views/register-page
+              (assoc data :errors {:email             (t [:validations :email :used])
+                                   :can_resend_token? true})))
           :else
           (let [token (models/register-user db (:email data))]
             (if (env :debug false)
               (log/debug "Your token is:" token)
               ;; else send email
               )
-            (respond-with/redirect "/" "You're almost done! You've just been an email that contains a confirmation link. Click the link in the email to complete your registration.")))))
+            (respond-with/redirect "/" (t [:flash :confirmation-sent]))))))
 
 (defn update-confirmation-token
   "Updates a user's confirmation token and re-sends confirmation email."
@@ -62,7 +65,7 @@
           (log/debug "Your updated token is:" token)
           ;; else send email
           )
-        (respond-with/redirect "/" "You're almost done! You've just been an email that contains a confirmation link. Click the link in the email to complete your registration."))
+        (respond-with/redirect "/" (t [:flash :confirmation-sent])))
       (respond-with/bad-request (views/register-page (assoc-in data [:errors :can_resend_token?] true))))))
 
 (defn confirm-user
@@ -76,7 +79,7 @@
     (if valid?
       (do
         (models/confirm-user db data)
-        (respond-with/redirect "/" "Thanks for confirming your email. You are now fully registered."))
+        (respond-with/redirect "/" (t [:flash :registered])))
       (respond-with/bad-request (views/confirmation-page data)))))
 
 (def auth-routes

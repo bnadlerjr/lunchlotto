@@ -1,11 +1,15 @@
 (ns lunchlotto.auth.validations
   (:require [bouncer.core :as b]
             [bouncer.validators :as v]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [lunchlotto.common.utils :as utils]))
+
+(def t (utils/make-translation-dictionary
+         "resources/translations.edn" :en :auth :validations))
 
 (v/defvalidator
   email-domain-validator
-  {:default-message-format "email must be from the cyrusinnovation.com domain"}
+  {:default-message-format (t [:email :domain])}
   [email]
   (= "cyrusinnovation.com" (last (clojure.string/split email #"@"))))
 
@@ -20,7 +24,8 @@
   boolean indicating if the validation has errors and the same map bouncer
   provides except that bouncer.core/errors is renamed to errors."
   [[errors params]]
-  [(nil? errors) (clojure.set/rename-keys params {:bouncer.core/errors :errors})])
+  [(nil? errors)
+   (clojure.set/rename-keys params {:bouncer.core/errors :errors})])
 
 (defn validate-email
   "An email is valid if:
@@ -34,9 +39,11 @@
   "Validates registration information."
   [params]
   (wrap-validation
-    (b/validate params
-                {:password              v/required
-                 :password_confirmation [[is-same (:password params) :message "password confirmation does not match password"]]
-                 :location              v/required
-                 :latitude              [v/required v/number]
-                 :longitude             [v/required v/number]})))
+    (b/validate
+      params
+      {:password              v/required
+       :password_confirmation [[is-same (:password params)
+                                :message (t [:password :mismatch])]]
+       :location              v/required
+       :latitude              [v/required v/number]
+       :longitude             [v/required v/number]})))

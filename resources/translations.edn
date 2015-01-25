@@ -1,0 +1,13 @@
+{:en
+ {:auth
+  {:flash
+   {:confirmation-sent  "You're almost done! You've just been an email that contains a confirmation link. Click the link in the email to complete your registration."
+    :email-used         "That email has already been used. Please login."
+    :invalid-token      "Invalid confirmation token."
+    :registered         "Thanks for confirming your email. You are now fully registered."}
+   :validations
+    {:email
+     {:domain "email must be from the cyrusinnovation.com domain"
+      :used   "email has already been used."}
+    :password
+    {:mismatch "password confirmation does not match password"}}}}}

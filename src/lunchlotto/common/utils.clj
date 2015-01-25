@@ -1,5 +1,6 @@
 (ns lunchlotto.common.utils
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.edn :as edn]
+            [clojure.tools.logging :as log]
             [clojure.string :as s]))
 
 (defn parse-number
@@ -36,3 +37,15 @@
 (def warn (partial log :warn))
 (def error (partial log :error))
 (def fatal (partial log :fatal))
+
+(defn make-translation-dictionary
+  "Loads the given EDN file and returns a function that can be used to look up
+  translation keys from the loaded file. If path is given, it is prepended to
+  the list of arguments given in the returned translation function.
+
+  TODO: What are the pros/cons of memoizing this? Is there a better way?"
+  [filename & path]
+  (let [dictionary (edn/read-string (slurp filename))]
+    (fn
+      [args]
+      (get-in dictionary (concat path args)))))
