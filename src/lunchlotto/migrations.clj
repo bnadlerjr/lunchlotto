@@ -1,6 +1,6 @@
 (ns lunchlotto.migrations
   (:require [clojure.java.jdbc :as jdbc]
-            [clojure.tools.logging :as log])
+            [lunchlotto.common.utils :as utils])
   (:import (java.sql Timestamp)))
 
 (defn initial-schema
@@ -37,7 +37,7 @@
   "Run the given migration and create an entry for it in the migrations table."
   [db migration]
   (let [name (str (:name (meta migration)))]
-    (log/info "Running migration:" name)
+    (utils/info "Running migration" {:name name})
     (migration db)
     (jdbc/insert! db :migrations
                   {:name name
@@ -54,7 +54,7 @@
     (name varchar(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)"])
 
-  (log/info "Checking for migrations to run...")
+  (utils/info "Checking for migrations")
   (jdbc/with-db-transaction
     [txn db]
     (let [migration-list (jdbc/query txn ["SELECT name FROM migrations"])

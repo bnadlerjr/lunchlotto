@@ -4,12 +4,12 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [compojure.core :refer [routes]]
             [environ.core :refer [env]]
-            [prone.middleware :refer [wrap-exceptions]]
-            [clojure.tools.logging :as log])
+            [prone.middleware :refer [wrap-exceptions]])
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.handlers :refer [common-routes]]
             [lunchlotto.auth.handlers :refer [auth-routes]]
-            [lunchlotto.common.middleware :as middleware]))
+            [lunchlotto.common.middleware :as middleware]
+            [lunchlotto.common.utils :as utils]))
 
 (def debug-mode? (env :debug false))
 
@@ -30,7 +30,7 @@
 (defn -main [port]
   (try (migrations/-main (env :database-url))
        (catch Exception e
-         (log/error (.getMessage e))))
+         (utils/error (.getMessage e))))
   (run-server application {:port (Integer. port)})
-  (log/info "Server started on port" port)
-  (log/info "Debug enabled:" debug-mode?))
+  (utils/info "Server started" {:port port
+                                :debug debug-mode?}))

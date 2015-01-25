@@ -1,7 +1,7 @@
 (ns lunchlotto.common.middleware
   (:require [clojure.string :as s]
-            [clojure.tools.logging :as log]
-            [ring.util.response :as ring])
+            [ring.util.response :as ring]
+            [lunchlotto.common.utils :as utils])
   (:import (java.util UUID)))
 
 (def sim-methods {"PUT" :put "DELETE" :delete})
@@ -22,25 +22,26 @@
   (fn [req]
     (let [start (System/currentTimeMillis)
           req-id (get-in req [:headers "x-request-id"])
-          to-keypair-strings (fn [[k v]] (str (name k) "=" v))
           req-attrs {:method (s/upper-case (name (:request-method req)))
                      :url (str (:uri req)
                                (if-let [query-string (:query-string req)]
                                  (str "?" query-string)))
                      :params (:params req)
                      :host (:server-name req)
-                     :protocol (s/upper-case (name (:scheme req)))}]
-      (log/info (str
-                  (format "[%s] RING Starting " req-id)
-                  (s/join " " (map to-keypair-strings req-attrs))))
+                     :protocol (s/upper-case (name (:scheme req)))
+                     :at "info"
+                     :request_id req-id}]
+
+      (utils/info "Starting Ring request" req-attrs)
       (let [resp (hdlr req)
             resp-attrs {:status (:status resp)
-                        :duration-ms (- (System/currentTimeMillis) start)}]
-        (log/info (str
-                    (format "[%s] RING Finished " req-id)
-                    (s/join " " (map to-keypair-strings resp-attrs))
-                    (if-let [location (get-in resp [:headers "Location"])]
-                      (str " redirect-to=" location))))
+                        :msg "Finished Ring request"
+                        :duration (str (- (System/currentTimeMillis) start) "ms")
+                        :request_id req-id}]
+        (utils/info "Finished Ring request"
+             (if-let [location (get-in resp [:headers "Location"])]
+               (assoc resp-attrs :location location)
+               resp-attrs))
         resp))))
 
 (defn wrap-content-type-html
