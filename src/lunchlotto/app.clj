@@ -2,18 +2,12 @@
   (:require [org.httpkit.server :refer [run-server]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.reload :refer [wrap-reload]]
-            [compojure.core :refer [routes]]
             [environ.core :refer [env]]
-            [prone.middleware :refer [wrap-exceptions]]
-            [cemerick.friend :as friend]
-            (cemerick.friend [workflows :as workflows]))
+            [prone.middleware :refer [wrap-exceptions]])
   (:require [lunchlotto.migrations :as migrations]
-            [lunchlotto.common.handlers :refer [common-routes]]
-            [lunchlotto.auth.handlers :refer [auth-routes authenticate failed-login]]
-            [lunchlotto.lunches.handlers :refer [lunch-routes]]
-            [lunchlotto.settings.handlers :refer [settings-routes]]
             [lunchlotto.common.logging :as logging]
-            [lunchlotto.common.middleware :as middleware]))
+            [lunchlotto.common.middleware :as middleware]
+            [lunchlotto.routes :refer [application-routes]]))
 
 (def debug-mode? (env :debug false))
 
@@ -22,14 +16,7 @@
 
 (def application
   (wrap-defaults
-    (-> (friend/authenticate
-          (routes auth-routes lunch-routes settings-routes common-routes)
-          {:allow-anon true
-           :login-uri "/login"
-           :login-failure-handler failed-login
-           :default-landing-uri "/"
-           :credential-fn authenticate
-           :workflows [(workflows/interactive-form)]})
+    (-> application-routes
         middleware/wrap-content-type-html
         middleware/wrap-logger
         middleware/wrap-request-id

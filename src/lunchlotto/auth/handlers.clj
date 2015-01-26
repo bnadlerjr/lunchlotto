@@ -1,7 +1,5 @@
 (ns lunchlotto.auth.handlers
-  (:require [compojure.core :refer [GET POST PUT routes]]
-            [environ.core :refer [env]]
-            [clojure.tools.logging :as log])
+  (:require [environ.core :refer [env]])
   (:require [lunchlotto.auth.models :as models]
             [lunchlotto.common.responses :as respond-with]
             [lunchlotto.auth.validations :as val]
@@ -101,12 +99,3 @@
 (defn failed-login
   [req]
   (respond-with/bad-request (views/login-page (t [:flash :invalid-creds]))))
-
-(def auth-routes
-  (routes
-    (GET "/register" [] show-registration-page)
-    (POST "/register" {params :params} (register-user params))
-    (PUT "/register" [] update-confirmation-token)
-    (GET "/confirm" [] show-confirmation-page)
-    (POST "/confirm" {params :params} (confirm-user params))
-    (GET "/login" [] show-login-page)))
