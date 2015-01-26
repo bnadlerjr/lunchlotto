@@ -74,9 +74,40 @@
      (include-js "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places")
      (include-js "/lunchlotto.js")]))
 
+(defn authenticated-layout
+  "Layout for authenticated users."
+  [& body]
+  (html5
+    {:lang :en}
+    [:head
+     [:title "Lunch Lotto"]
+     [:meta {:name :viewport
+             :content "width=device-width, initial-scale=1.0"}]
+     (bootstrap-css-cdn bootstrap-version)]
+
+    [:body
+     [:div.container
+      [:nav.navbar.navbar-default
+       [:div.container-fluid
+        [:div.navbar-header
+         [:a.navbar-brand {:href "/"} "LunchLotto"]]
+        [:ul.nav.navbar-nav
+         [:li [:a {:href "/lunches/upcoming"} "Upcoming"]]
+         [:li [:a {:href "/lunches/pending"} "Pending"]]
+         [:li [:a {:href "/lunches/recommended"} "Recommended"]]
+         [:li [:a {:href "/settings"} "Settings"]]]]]
+      body]
+     (jquery-cdn jquery-version)
+     (jquery-local-fallback jquery-version)
+     (bootstrap-js-cdn bootstrap-version)
+     (bootstrap-js-local-fallback bootstrap-version)
+     (bootstrap-css-local-fallback bootstrap-version)
+     (include-js "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places")
+     (include-js "/lunchlotto.js")]))
+
 (defn home-page
   "Home page of the application."
   [flash]
-  (layout
+  (authenticated-layout
     (when-not (nil? flash) [:div {:class "alert alert-info"} (str flash)])
-    [:p "Hi!"]))
+    [:h1 "Welcome to LunchLotto!"]))

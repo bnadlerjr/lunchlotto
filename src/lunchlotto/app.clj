@@ -10,6 +10,8 @@
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.handlers :refer [common-routes]]
             [lunchlotto.auth.handlers :refer [auth-routes authenticate failed-login]]
+            [lunchlotto.lunches.handlers :refer [lunch-routes]]
+            [lunchlotto.settings.handlers :refer [settings-routes]]
             [lunchlotto.common.logging :as logging]
             [lunchlotto.common.middleware :as middleware]))
 
@@ -21,7 +23,7 @@
 (def application
   (wrap-defaults
     (-> (friend/authenticate
-          (routes auth-routes common-routes)
+          (routes auth-routes lunch-routes settings-routes common-routes)
           {:allow-anon true
            :login-uri "/login"
            :login-failure-handler failed-login
