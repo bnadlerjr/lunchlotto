@@ -3,5 +3,5 @@ addons:
   postgresql: "9.3"
 before_script:
   - psql -c 'create database lunchlotto_test;' -U postgres
-after_deploy:
+after_script:
   - lein lint
