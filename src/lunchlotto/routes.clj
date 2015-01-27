@@ -10,6 +10,7 @@
 
 (def anonymous
   (routes
+    (GET "/" [] common/home)
     (GET "/register" [] auth/show-registration-page)
     (POST "/register" {params :params} (auth/register-user params))
     (PUT "/register" [] auth/update-confirmation-token)
@@ -20,7 +21,6 @@
 (def secure-user
   (friend/wrap-authorize
     (routes
-      (GET "/" [] common/home)
       (GET "/lunches/upcoming" [] lunches/show-upcoming)
       (GET "/lunches/pending" [] lunches/show-pending)
       (GET "/lunches/recommended" [] lunches/show-recommended)
