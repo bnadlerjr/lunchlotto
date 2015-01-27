@@ -3,7 +3,7 @@
   :url ""
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[bouncer "0.3.1"]
+  :dependencies [[bouncer "0.3.2"]
                  [clj-time "0.9.0"]
                  [compojure "1.3.1"]
                  [crypto-password "0.1.3"]
