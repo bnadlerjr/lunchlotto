@@ -65,6 +65,13 @@
 
     [:body
      [:div.container
+      [:nav.navbar.navbar-default
+       [:div.container-fluid
+        [:div.navbar-header
+         [:a.navbar-brand {:href "/"} "LunchLotto"]]
+        [:ul.nav.navbar-nav
+         [:li [:a {:href "/login"} "Login"]]
+         [:li [:a {:href "/register"} "Register"]]]]]
       body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)
@@ -108,6 +115,6 @@
 (defn home-page
   "Home page of the application."
   [flash]
-  (authenticated-layout
+  (layout
     (when-not (nil? flash) [:div {:class "alert alert-info"} (str flash)])
     [:h1 "Welcome to LunchLotto!"]))
