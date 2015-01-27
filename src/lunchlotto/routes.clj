@@ -8,7 +8,7 @@
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows])))
 
-(def anonymous
+(def ^:private anonymous
   (routes
     (GET "/" [] common/home)
     (GET "/register" [] auth/show-registration-page)
@@ -18,7 +18,7 @@
     (POST "/confirm" {params :params} (auth/confirm-user params))
     (GET "/login" [] auth/show-login-page)))
 
-(def secure-user
+(def ^:private secure-user
   (friend/wrap-authorize
     (routes
       (GET "/lunches/upcoming" [] lunches/show-upcoming)
