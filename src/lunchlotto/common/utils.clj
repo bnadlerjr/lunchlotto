@@ -1,5 +1,7 @@
 (ns lunchlotto.common.utils
-  (:require [clojure.edn :as edn]))
+  (:require [clojure.edn :as edn]
+            [environ.core :refer [env]]
+            [postmark.core :as pm]))
 
 (defn parse-number
   "Convert a string to a number. Return nil if not a number.
@@ -22,3 +24,7 @@
     (fn
       [args]
       (get-in dictionary (concat path args)))))
+
+(def make-email
+  "Wraps Postmark email library."
+  (pm/postmark (env :postmark-api-key) (env :postmark-from)))

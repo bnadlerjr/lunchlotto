@@ -3,12 +3,18 @@
   :url ""
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[bouncer "0.3.2"]
+  :dependencies [[bouncer "0.3.2" :exclusions [org.clojure/tools.reader]]
                  [clj-time "0.9.0"]
                  [compojure "1.3.1"]
                  [crypto-password "0.1.3"]
                  [crypto-random "1.2.0"]
                  [environ "1.0.0"]
+                 [postmark "1.1.0" :exclusions [org.clojure/clojure
+                                                commons-logging
+                                                slingshot
+                                                commons-codec
+                                                org.apache.httpcomponents/httpclient
+                                                org.clojure/tools.reader]]
                  [com.cemerick/friend "0.2.1"]
                  [hiccup "1.0.5"]
                  [http-kit "2.1.19"]

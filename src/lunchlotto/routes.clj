@@ -13,10 +13,10 @@
   (routes
     (GET "/" [] common/home)
     (GET "/register" [] auth/show-registration-page)
-    (POST "/register" {params :params} (auth/register-user params))
+    (POST "/register" [] auth/register-user)
     (PUT "/register" [] auth/update-confirmation-token)
     (GET "/confirm" [] auth/show-confirmation-page)
-    (POST "/confirm" {params :params} (auth/confirm-user params))
+    (POST "/confirm" [] auth/confirm-user)
     (GET "/login" [] auth/show-login-page)
     (ANY "/logout" [] (friend/logout* (respond-with/redirect "/")))))
 

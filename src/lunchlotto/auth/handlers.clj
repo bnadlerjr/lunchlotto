@@ -7,7 +7,8 @@
             [lunchlotto.auth.views :as views]
             [lunchlotto.common.logging :as logging]
             [lunchlotto.common.utils :as utils]
-            [lunchlotto.auth.utils :as auth-utils]))
+            [lunchlotto.auth.utils :as auth-utils]
+            [lunchlotto.auth.email :as email]))
 
 (def db (env :database-url))
 
@@ -40,8 +41,8 @@
   "Register a new user. Sends an email with a password token to the email
   address provided. Redirects to the home page with a message indicating that
   the user needs to check their email."
-  [params]
-  (let [[valid? data] (val/validate-email params)
+  [req]
+  (let [[valid? data] (val/validate-email (:params req))
         user (models/find-user-by-email db (:email data))]
 
     (cond (not valid?)
@@ -53,14 +54,12 @@
           (and user (not (:is_confirmed user)))
           (respond-with/ok
             (views/register-page
-              (assoc data :errors {:email             (t [:validations :email :used])
-                                   :can_resend_token? true})))
+              (assoc data :errors
+                          {:email             (t [:validations :email :used])
+                           :can_resend_token? true})))
           :else
           (let [token (models/register-user db (:email data))]
-            (if (env :debug false)
-              (logging/debug (str "Your token is:" token))
-              ;; else send email
-              )
+            (email/send-confirmation-email (:email data) token req)
             (respond-with/redirect "/" (t [:flash :confirmation-sent]))))))
 
 (defn update-confirmation-token
@@ -69,17 +68,17 @@
   (let [[valid? data] (val/validate-email (:params req))]
     (if valid?
       (let [token (models/update-confirmation-token db (:email data))]
-        (if (env :debug false)
-          (logging/debug (str "Your updated token is:" token))
-          ;; else send email
-          )
+        (email/send-confirmation-email (:email data) token req)
         (respond-with/redirect "/" (t [:flash :confirmation-sent])))
-      (respond-with/bad-request (views/register-page (assoc-in data [:errors :can_resend_token?] true))))))
+      (respond-with/bad-request
+        (views/register-page
+          (assoc-in data [:errors :can_resend_token?] true))))))
 
 (defn confirm-user
   "Finish the user registration and confirm the new user."
-  [params]
-  (let [[valid? data]
+  [req]
+  (let [params (:params req)
+        [valid? data]
         (val/validate-registration
           (assoc params
             :latitude (utils/parse-number (:latitude params))
