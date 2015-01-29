@@ -3,7 +3,7 @@
             [lunchlotto.auth.handlers :as auth]
             [lunchlotto.lunches.handlers :as lunches]
             [lunchlotto.settings.handlers :as settings])
-  (:require [compojure.core :refer [GET POST PUT routes]]
+  (:require [compojure.core :refer [GET POST PUT routes wrap-routes]]
             [compojure.route :refer [not-found]]
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows])))
@@ -19,12 +19,13 @@
     (GET "/login" [] auth/show-login-page)))
 
 (def ^:private secure-user
-  (friend/wrap-authorize
+  (wrap-routes
     (routes
       (GET "/lunches/upcoming" [] lunches/show-upcoming)
       (GET "/lunches/pending" [] lunches/show-pending)
       (GET "/lunches/recommended" [] lunches/show-recommended)
       (GET "/settings" [] settings/show-settings))
+    friend/wrap-authorize
     #{:lunchlotto.auth.handlers/user}))
 
 (def application-routes
