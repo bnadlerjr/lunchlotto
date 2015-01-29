@@ -28,8 +28,9 @@
   :min-lein-version "2.0.0"
   :uberjar-name "lunchlotto.jar"
   :main lunchlotto.app
-  :profiles {:dev {:dependencies [[ring/ring-mock "0.2.0"]]}
-             :test {:env {:database-url "jdbc:postgresql://localhost/lunchlotto_test"}}}
+  :profiles {:dev {}
+             :test {:env {:database-url "jdbc:postgresql://localhost/lunchlotto_test"}
+                    :dependencies [[ring/ring-mock "0.2.0"]]}}
   :plugins [[lein-environ "1.0.0"]
             [lein-ancient "0.6.1"]
             [lein-kibit "0.0.8"]
