@@ -102,7 +102,8 @@
          [:li [:a {:href "/lunches/upcoming"} "Upcoming"]]
          [:li [:a {:href "/lunches/pending"} "Pending"]]
          [:li [:a {:href "/lunches/recommended"} "Recommended"]]
-         [:li [:a {:href "/settings"} "Settings"]]]]]
+         [:li [:a {:href "/settings"} "Settings"]]
+         [:li [:a {:href "/logout"} "Logout"]]]]]
       body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)

@@ -2,8 +2,9 @@
   (:require [lunchlotto.common.handlers :as common]
             [lunchlotto.auth.handlers :as auth]
             [lunchlotto.lunches.handlers :as lunches]
-            [lunchlotto.settings.handlers :as settings])
-  (:require [compojure.core :refer [GET POST PUT routes wrap-routes]]
+            [lunchlotto.settings.handlers :as settings]
+            [lunchlotto.common.responses :as respond-with])
+  (:require [compojure.core :refer [ANY GET POST PUT routes wrap-routes]]
             [compojure.route :refer [not-found]]
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows])))
@@ -16,7 +17,8 @@
     (PUT "/register" [] auth/update-confirmation-token)
     (GET "/confirm" [] auth/show-confirmation-page)
     (POST "/confirm" {params :params} (auth/confirm-user params))
-    (GET "/login" [] auth/show-login-page)))
+    (GET "/login" [] auth/show-login-page)
+    (ANY "/logout" [] (friend/logout* (respond-with/redirect "/")))))
 
 (def ^:private secure-user
   (wrap-routes
