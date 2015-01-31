@@ -69,3 +69,14 @@
     (if (get-in req [:headers "x-request-id"])
       (hdlr req)
       (hdlr (assoc-in req [:headers "x-request-id"] (str (UUID/randomUUID)))))))
+
+(defn wrap-errors
+  "If an exception is raised, respond with a 500 error page."
+  [hdlr]
+  (fn [req]
+    (try
+      (hdlr req)
+      (catch Throwable t
+             {:status 500
+              :headers {}
+              :body "Oops! Something went wrong!"}))))

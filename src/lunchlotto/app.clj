@@ -22,6 +22,7 @@
         middleware/wrap-request-id
         (cond->
           debug-mode? wrap-exceptions
+          (not debug-mode?) middleware/wrap-errors
           debug-mode? wrap-reload))
     application-defaults))
 
@@ -31,4 +32,4 @@
          (logging/error (.getMessage e))))
   (run-server application {:port (Integer. port)})
   (logging/info "Server started" {:port port
-                                :debug debug-mode?}))
+                                  :debug debug-mode?}))
