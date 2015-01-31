@@ -57,6 +57,7 @@
                                                     :value (:location params)
                                                     :description "In order to recommend lunches with people near you, we need to know your location. You can always change it later."})
 
+               (f/hidden-field {:id "email" :value (:email params)} "email")
                (f/hidden-field {:id "confirmation_token" :value (:confirmation_token params)} "confirmation_token")
                (f/hidden-field {:id "latitude" :value (:latitude params)} "latitude")
                (f/hidden-field {:id "longitude" :value (:longitude params)} "longitude"))))

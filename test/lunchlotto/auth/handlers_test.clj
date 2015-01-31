@@ -81,7 +81,7 @@
       (with-redefs [models/confirm-user (fn [_ _] nil)]
         (let [resp (handlers/confirm-user valid-params)]
           (is (= 302 (:status resp)))
-          (is (= {"Location" "/"} (:headers resp)))
+          (is (= {"Location" "/lunches/upcoming"} (:headers resp)))
           (is (= "Thanks for confirming your email. You are now fully registered." (:flash resp))))))
 
     (testing "latitude is not number"

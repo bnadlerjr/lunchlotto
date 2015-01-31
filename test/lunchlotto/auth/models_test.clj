@@ -92,7 +92,8 @@
                                            :latitude 42.123
                                            :longitude -42.321
                                            :password "secret"
-                                           :confirmation_token token})
+                                           :confirmation_token token
+                                           :email (:email user)})
         confirmed-user (models/find-user-by-email *txn* (:email user))]
 
     (testing "returns true when confirmation is successful"

@@ -1,5 +1,6 @@
 (ns lunchlotto.auth.handlers
-  (:require [environ.core :refer [env]])
+  (:require [environ.core :refer [env]]
+            [cemerick.friend :as friend])
   (:require [lunchlotto.auth.models :as models]
             [lunchlotto.common.responses :as respond-with]
             [lunchlotto.auth.validations :as val]
@@ -30,7 +31,9 @@
   (let [token (get-in req [:params :confirmation_token])
         user (models/find-user-by-confirmation-token db token)]
     (if user
-      (respond-with/ok (views/confirmation-page (:params req)))
+      (respond-with/ok
+        (views/confirmation-page
+          (:params (assoc-in req [:params :email] (:email user)))))
       (respond-with/redirect "/" (t [:flash :invalid-token])))))
 
 (defn register-user
@@ -84,7 +87,10 @@
     (if valid?
       (do
         (models/confirm-user db data)
-        (respond-with/redirect "/" (t [:flash :registered])))
+        (friend/merge-authentication
+          (respond-with/redirect "/lunches/upcoming" (t [:flash :registered]))
+          {:username (:email data)
+           :roles #{::user}}))
       (respond-with/bad-request (views/confirmation-page data)))))
 
 (defn authenticate

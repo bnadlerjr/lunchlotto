@@ -52,9 +52,10 @@
                :confirmed_at (coerce/to-timestamp (time/now))
                :confirmation_token nil
                :confirmation_token_expires_at nil}
-       ["confirmation_token=? AND confirmation_token_expires_at>?"
+       ["confirmation_token=? AND confirmation_token_expires_at>? AND email=?"
         (utils/digest (:confirmation_token params))
-        (coerce/to-timestamp (time/now))])))
+        (coerce/to-timestamp (time/now))
+        (:email params)])))
 
 (defn update-confirmation-token
   "Updates a user's confirmation token and sets a new expiry. Assumes that the
