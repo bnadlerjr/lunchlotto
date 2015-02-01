@@ -38,6 +38,6 @@
       (not-found "Page not found."))
     {:login-uri "/login"
      :login-failure-handler auth/failed-login
-     :default-landing-uri "/"
+     :default-landing-uri "/lunches/upcoming"
      :credential-fn auth/authenticate
      :workflows [(workflows/interactive-form)]}))
