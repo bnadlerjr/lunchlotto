@@ -5,9 +5,7 @@
             [lunchlotto.common.responses :as respond-with]
             [lunchlotto.auth.validations :as val]
             [lunchlotto.auth.views :as views]
-            [lunchlotto.common.logging :as logging]
             [lunchlotto.common.utils :as utils]
-            [lunchlotto.auth.utils :as auth-utils]
             [lunchlotto.auth.email :as email]))
 
 (def db (env :database-url))
@@ -95,11 +93,9 @@
 (defn authenticate
   "Authenticates a user with the given username (email) and password."
   [{:keys [username password]}]
-  (let [user (models/find-user-by-email db username)]
-    (when (and user
-               (auth-utils/check-password password (:password user)))
-      (assoc user :username username
-                  :roles #{::user}))))
+  (when-let [user (models/authenticate-user db username password)]
+    (assoc user :username username
+                :roles #{::user})))
 
 (defn failed-login
   [req]

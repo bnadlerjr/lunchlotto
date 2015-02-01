@@ -2,7 +2,8 @@
   (:require [clj-time.coerce :as coerce]
             [clj-time.core :as time]
             [clojure.java.jdbc :as jdbc])
-  (:require [lunchlotto.auth.utils :as utils]))
+  (:require [lunchlotto.auth.utils :as utils]
+            [lunchlotto.auth.utils :as auth-utils]))
 
 (defn register-user
   "Register a new user in the database. Assumes that the email address has
@@ -68,3 +69,15 @@
                                     :confirmation_token_expires_at expires}
                          ["is_confirmed=false AND email=?" email]))
       token)))
+
+(defn authenticate-user
+  "Authenticates user by checking password. Only users that are confirmed can
+  be authenticated."
+  [db email password]
+  (let [user (first (jdbc/query db ["SELECT *
+                                     FROM users
+                                     WHERE is_confirmed=true
+                                       AND email=?" email]))]
+    (when (and user
+               (auth-utils/check-password password (:password user)))
+      user)))
