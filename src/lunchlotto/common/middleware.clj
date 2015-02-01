@@ -1,8 +1,11 @@
 (ns lunchlotto.common.middleware
   (:require [clojure.string :as s]
             [ring.util.response :as ring]
-            [lunchlotto.common.logging :as logging])
-  (:import (java.util UUID)))
+            [environ.core :refer [env]])
+  (:require [lunchlotto.common.logging :as logging]
+            [lunchlotto.common.utils :as utils])
+  (:import (java.util UUID)
+           (java.io PrintWriter StringWriter)))
 
 (def sim-methods {"PUT" :put "DELETE" :delete})
 
@@ -70,13 +73,22 @@
       (hdlr req)
       (hdlr (assoc-in req [:headers "x-request-id"] (str (UUID/randomUUID)))))))
 
-(defn wrap-errors
-  "If an exception is raised, respond with a 500 error page."
+(defn wrap-exception-notifier
+  "If an exception is raised, send an email notification and return a 500
+  response."
   [hdlr]
   (fn [req]
     (try
       (hdlr req)
       (catch Throwable t
-             {:status 500
-              :headers {}
-              :body "Oops! Something went wrong!"}))))
+        (let [stacktrace (StringWriter.)]
+          (.printStackTrace t (PrintWriter. stacktrace))
+          (utils/make-email
+            {:to      (env :exception-notification-to)
+             :subject (str "[LunchLotto EXCEPTION] " (.getMessage t))
+             :text    (str "Request ID: "
+                           (get-in req [:headers "x-request-id"])
+                           "\nStacktrace: " stacktrace)}))
+        {:status 500
+         :headers {}
+         :body "Oops! Something went wrong!"}))))

@@ -18,12 +18,12 @@
   (wrap-defaults
     (-> application-routes
         middleware/wrap-content-type-html
-        middleware/wrap-logger
-        middleware/wrap-request-id
         (cond->
           debug-mode? wrap-exceptions
-          (not debug-mode?) middleware/wrap-errors
-          debug-mode? wrap-reload))
+          (not debug-mode?) middleware/wrap-exception-notifier
+          debug-mode? wrap-reload)
+        middleware/wrap-logger
+        middleware/wrap-request-id)
     application-defaults))
 
 (defn -main [port]
