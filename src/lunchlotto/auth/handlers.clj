@@ -16,11 +16,11 @@
 (defn show-registration-page
   "Show the new user registration page."
   [req]
-  (respond-with/ok (views/register-page (:params req))))
+  (respond-with/ok (views/register-page (select-keys req [:params]))))
 
 (defn show-login-page
   "Show the user login page."
-  [req]
+  [_]
   (respond-with/ok (views/login-page)))
 
 (defn show-confirmation-page
@@ -32,7 +32,7 @@
     (if user
       (respond-with/ok
         (views/confirmation-page
-          (:params (assoc-in req [:params :email] (:email user)))))
+          (assoc-in (select-keys req [:params]) [:params :email] (:email user))))
       (respond-with/redirect "/" (t [:flash :invalid-token])))))
 
 (defn register-user
@@ -44,7 +44,7 @@
         user (models/find-user-by-email db (:email data))]
 
     (cond (not valid?)
-          (respond-with/bad-request (views/register-page data))
+          (respond-with/bad-request (views/register-page {:params data}))
 
           (and user (:is_confirmed user))
           (respond-with/redirect "/" (t [:flash :email-used]))
@@ -52,9 +52,9 @@
           (and user (not (:is_confirmed user)))
           (respond-with/ok
             (views/register-page
-              (assoc data :errors
-                          {:email             (t [:validations :email :used])
-                           :can_resend_token? true})))
+              {:params (assoc data :errors
+                                   {:email             (t [:validations :email :used])
+                                    :can_resend_token? true})}))
           :else
           (let [token (models/register-user db (:email data))]
             (email/send-confirmation-email (:email data) token req)
@@ -70,7 +70,7 @@
         (respond-with/redirect "/" (t [:flash :confirmation-sent])))
       (respond-with/bad-request
         (views/register-page
-          (assoc-in data [:errors :can_resend_token?] true))))))
+          {:params (assoc-in data [:errors :can_resend_token?] true)})))))
 
 (defn confirm-user
   "Finish the user registration and confirm the new user."
@@ -88,7 +88,7 @@
           (respond-with/redirect "/lunches/upcoming" (t [:flash :registered]))
           {:username (:email data)
            :roles #{::user}}))
-      (respond-with/bad-request (views/confirmation-page data)))))
+      (respond-with/bad-request (views/confirmation-page {:params data})))))
 
 (defn authenticate
   "Authenticates a user with the given username (email) and password."
@@ -98,5 +98,5 @@
                 :roles #{::user})))
 
 (defn failed-login
-  [req]
-  (respond-with/bad-request (views/login-page (t [:flash :invalid-creds]))))
+  [_]
+  (respond-with/bad-request (views/login-page {:flash (t [:flash :invalid-creds])})))

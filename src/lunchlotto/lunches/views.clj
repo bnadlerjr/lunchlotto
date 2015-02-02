@@ -3,15 +3,15 @@
 
 (defn upcoming
   []
-  (authenticated-layout
+  (authenticated-layout {}
     [:h1 "Upcoming Lunches"]))
 
 (defn pending
   []
-  (authenticated-layout
+  (authenticated-layout {}
     [:h1 "Pending Lunches"]))
 
 (defn recommended
   []
-  (authenticated-layout
+  (authenticated-layout {}
     [:h1 "Recommended Lunches"]))

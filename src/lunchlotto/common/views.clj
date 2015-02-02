@@ -54,7 +54,7 @@
 (defn layout
   "The main layout. Uses the CDN versions of jQuery and Bootstrap. If those are
   not available, fall back to local copies."
-  [& body]
+  [context & body]
   (html5
     {:lang :en}
     [:head
@@ -72,6 +72,7 @@
         [:ul.nav.navbar-nav
          [:li [:a {:href "/login"} "Login"]]
          [:li [:a {:href "/register"} "Register"]]]]]
+      (when-not (nil? (:flash context)) [:div {:class "alert alert-info"} (:flash context)])
       body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)
@@ -83,7 +84,7 @@
 
 (defn authenticated-layout
   "Layout for authenticated users."
-  [& body]
+  [context & body]
   (html5
     {:lang :en}
     [:head
@@ -104,6 +105,7 @@
          [:li [:a {:href "/lunches/recommended"} "Recommended"]]
          [:li [:a {:href "/settings"} "Settings"]]
          [:li [:a {:href "/logout"} "Logout"]]]]]
+      (when-not (nil? (:flash context)) [:div {:class "alert alert-info"} (:flash context)])
       body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)
@@ -115,7 +117,6 @@
 
 (defn home-page
   "Home page of the application."
-  [flash]
-  (layout
-    (when-not (nil? flash) [:div {:class "alert alert-info"} (str flash)])
+  [context]
+  (layout context
     [:h1 "Welcome to LunchLotto!"]))

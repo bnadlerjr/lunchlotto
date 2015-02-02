@@ -3,5 +3,5 @@
 
 (defn show-settings
   []
-  (authenticated-layout
+  (authenticated-layout {}
     [:h1 "Settings"]))

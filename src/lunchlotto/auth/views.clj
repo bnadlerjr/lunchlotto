@@ -5,11 +5,11 @@
 
 (defn register-page
   "User registration page."
-  [params]
+  [{:keys [:params] :as context}]
   (let [options (if (get-in params [:errors :can_resend_token?])
                   {:button-text "Re-send Confirmation Email" :method :put}
                   {:button-text "Register" :method :post})]
-    (layout
+    (layout context
       [:h2 "Register New User"]
       (forms/build-form (:method options) "/register" (:button-text options)
                         [:text-field "email"
@@ -21,8 +21,8 @@
 (defn confirmation-page
   "Allows user to complete their registration by providing a password and
   location."
-  [params]
-  (layout
+  [{:keys [:params] :as context}]
+  (layout context
     [:h2 "Finish Registration"]
     [:p "Thanks for confirming your email address! Follow the steps below to finish your registration."]
     (forms/build-form :post "/confirm" "Finish Registration"
@@ -50,14 +50,15 @@
 
 (defn login-page
   "Allows user to login."
-  [& flash]
-  (layout
-    (when-not (nil? flash) [:div {:class "alert alert-info"} flash])
-    [:h2 "Login"]
-    [:p "New here? " (e/link-to "/register" "Register") " for an account."]
-    (forms/build-form :post "/login" "Login"
-                      [:text-field "username"
-                       {:label "Email"
-                        :opts  {:required true :autofocus true}}]
+  ([]
+    (login-page {}))
+  ([context]
+    (layout context
+            [:h2 "Login"]
+            [:p "New here? " (e/link-to "/register" "Register") " for an account."]
+            (forms/build-form :post "/login" "Login"
+                              [:text-field "username"
+                               {:label "Email"
+                                :opts  {:required true :autofocus true}}]
 
-                      [:password-field "password" {:label "Password"}])))
+                              [:password-field "password" {:label "Password"}]))))

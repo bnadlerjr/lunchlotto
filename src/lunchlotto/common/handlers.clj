@@ -5,4 +5,4 @@
 (defn home
   "The home page handler."
   [req]
-  (respond-with/ok (views/home-page (req :flash))))
+  (respond-with/ok (views/home-page (select-keys req [:flash]))))
