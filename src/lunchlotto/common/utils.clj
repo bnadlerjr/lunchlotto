@@ -11,7 +11,7 @@
   [s]
   (if (and (not (nil? s))
            (re-find #"^-?\d+\.?\d*$" s))
-    (read-string s)))
+    (edn/read-string s)))
 
 (defn make-translation-dictionary
   "Loads the given EDN file and returns a function that can be used to look up
