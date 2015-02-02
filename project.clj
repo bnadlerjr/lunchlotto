@@ -26,7 +26,7 @@
                  [org.clojure/clojure "1.6.0"]
                  [org.clojure/java.jdbc "0.3.6"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [pandect "0.5.0"]
+                 [pandect "0.5.1"]
                  [postgresql/postgresql "9.3-1102.jdbc41"]
                  [prone "0.8.0"]
                  [ring "1.3.2"]
