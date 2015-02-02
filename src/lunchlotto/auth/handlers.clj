@@ -94,8 +94,8 @@
   "Authenticates a user with the given username (email) and password."
   [{:keys [username password]}]
   (when-let [user (models/authenticate-user db username password)]
-    (assoc user :username username
-                :roles #{::user})))
+    (assoc (select-keys user [:id :email]) :username username
+                                           :roles #{::user})))
 
 (defn failed-login
   [_]
