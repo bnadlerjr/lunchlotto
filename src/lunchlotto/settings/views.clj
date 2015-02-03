@@ -1,7 +1,7 @@
 (ns lunchlotto.settings.views
-  (:require [lunchlotto.common.views :refer [authenticated-layout]]))
+  (:require [lunchlotto.common.views :refer [layout]]))
 
 (defn show-settings
-  []
-  (authenticated-layout {}
+  [context]
+  (layout context
     [:h1 "Settings"]))

@@ -1,17 +1,17 @@
 (ns lunchlotto.lunches.views
-  (:require [lunchlotto.common.views :refer [authenticated-layout]]))
+  (:require [lunchlotto.common.views :refer [layout]]))
 
 (defn upcoming
-  []
-  (authenticated-layout {}
+  [context]
+  (layout context
     [:h1 "Upcoming Lunches"]))
 
 (defn pending
-  []
-  (authenticated-layout {}
+  [context]
+  (layout context
     [:h1 "Pending Lunches"]))
 
 (defn recommended
-  []
-  (authenticated-layout {}
+  [context]
+  (layout context
     [:h1 "Recommended Lunches"]))

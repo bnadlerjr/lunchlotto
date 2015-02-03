@@ -2,8 +2,8 @@
   (:require [hiccup.page :refer [html5 include-css include-js]]
             [hiccup.element :refer [javascript-tag]]))
 
-(def jquery-version "2.1.3")
-(def bootstrap-version "3.3.1")
+(def ^:private jquery-version "2.1.3")
+(def ^:private bootstrap-version "3.3.1")
 
 (defn- bootstrap-css-cdn [version]
   (include-css
@@ -51,10 +51,27 @@
       version
       ".min.js\"><\\/script>')")))
 
+(def ^:private anonymous-menu [["/login" "Login"]
+                               ["/register" "Register"]])
+
+(def ^:private user-menu [["/lunches/upcoming" "Upcoming"]
+                          ["/lunches/pending" "Pending"]
+                          ["/lunches/recommended" "Recommended"]
+                          ["/settings" "Settings"]
+                          ["/logout" "Logout"]])
+
+(defn- build-menu
+  [roles]
+  (map
+    (fn [[url label]] [:li [:a {:href url} label]])
+    (cond
+      (= #{:lunchlotto.auth.handlers/user} roles) user-menu
+      :else anonymous-menu)))
+
 (defn layout
   "The main layout. Uses the CDN versions of jQuery and Bootstrap. If those are
   not available, fall back to local copies."
-  [context & body]
+  [{:keys [:flash :current-user]} & body]
   (html5
     {:lang :en}
     [:head
@@ -70,42 +87,8 @@
         [:div.navbar-header
          [:a.navbar-brand {:href "/"} "LunchLotto"]]
         [:ul.nav.navbar-nav
-         [:li [:a {:href "/login"} "Login"]]
-         [:li [:a {:href "/register"} "Register"]]]]]
-      (when-not (nil? (:flash context)) [:div {:class "alert alert-info"} (:flash context)])
-      body]
-     (jquery-cdn jquery-version)
-     (jquery-local-fallback jquery-version)
-     (bootstrap-js-cdn bootstrap-version)
-     (bootstrap-js-local-fallback bootstrap-version)
-     (bootstrap-css-local-fallback bootstrap-version)
-     (include-js "//maps.googleapis.com/maps/api/js?v=3.exp&libraries=places")
-     (include-js "/lunchlotto.js")]))
-
-(defn authenticated-layout
-  "Layout for authenticated users."
-  [context & body]
-  (html5
-    {:lang :en}
-    [:head
-     [:title "Lunch Lotto"]
-     [:meta {:name :viewport
-             :content "width=device-width, initial-scale=1.0"}]
-     (bootstrap-css-cdn bootstrap-version)]
-
-    [:body
-     [:div.container
-      [:nav.navbar.navbar-default
-       [:div.container-fluid
-        [:div.navbar-header
-         [:a.navbar-brand {:href "/"} "LunchLotto"]]
-        [:ul.nav.navbar-nav
-         [:li [:a {:href "/lunches/upcoming"} "Upcoming"]]
-         [:li [:a {:href "/lunches/pending"} "Pending"]]
-         [:li [:a {:href "/lunches/recommended"} "Recommended"]]
-         [:li [:a {:href "/settings"} "Settings"]]
-         [:li [:a {:href "/logout"} "Logout"]]]]]
-      (when-not (nil? (:flash context)) [:div {:class "alert alert-info"} (:flash context)])
+         (build-menu (:roles current-user))]]]
+      (when-not (nil? flash) [:div {:class "alert alert-info"} flash])
       body]
      (jquery-cdn jquery-version)
      (jquery-local-fallback jquery-version)
