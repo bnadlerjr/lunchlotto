@@ -4,7 +4,7 @@
             [lunchlotto.lunches.handlers :as lunches]
             [lunchlotto.settings.handlers :as settings]
             [lunchlotto.common.responses :as respond-with])
-  (:require [compojure.core :refer [ANY GET POST PUT routes wrap-routes]]
+  (:require [compojure.core :refer [ANY DELETE GET POST PUT routes wrap-routes]]
             [compojure.route :refer [not-found]]
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows])))
@@ -26,7 +26,8 @@
       (GET "/lunches/upcoming" [] lunches/show-upcoming)
       (GET "/lunches/pending" [] lunches/show-pending)
       (GET "/lunches/recommended" [] lunches/show-recommended)
-      (GET "/settings" [] settings/show-settings))
+      (GET "/settings" [] settings/show-settings)
+      (DELETE "/settings" [] settings/delete-user))
     friend/wrap-authorize
     #{:lunchlotto.auth.handlers/user}))
 
