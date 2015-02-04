@@ -2,13 +2,14 @@
   (:require [hiccup.form :as hiccup]
             [ring.util.anti-forgery :as ring]))
 
-(defn make-field [func field {:keys [:label :value :error :description :opts]}]
+(defn make-field [func field {:keys [:label :value :error :help-text :opts]}]
   [:div.form-group
    {:class (when error "has-error")}
    (hiccup/label {:class "control-label"} field label)
-   (when description [:p description])
    (func (merge {:id field :class "form-control" :value value} opts) field)
-   (when error [:span.help-block error])])
+   (cond
+     error [:span.help-block error]
+     help-text [:span.help-block help-text])])
 
 (defmulti field first)
 

@@ -41,7 +41,7 @@
                        {:label       "Location"
                         :error       (get-in params [:errors :location])
                         :value       (:location params)
-                        :description "In order to recommend lunches with people near you, we need to know your location. You can always change it later."}]
+                        :help-text "In order to recommend lunches with people near you, we need to know your location. You can always change it later."}]
 
                       [:hidden-field "email" {:value (:email params)}]
                       [:hidden-field "confirmation_token" {:value (:confirmation_token params)}]
