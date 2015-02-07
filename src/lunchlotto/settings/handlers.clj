@@ -3,9 +3,13 @@
             [environ.core :refer [env]])
   (:require [lunchlotto.common.responses :as respond-with]
             [lunchlotto.settings.models :as models]
-            [lunchlotto.settings.views :as views]))
+            [lunchlotto.settings.views :as views]
+            [lunchlotto.common.utils :as utils]))
 
 (def db (env :database-url))
+
+(def t (utils/make-translation-dictionary
+         "resources/translations.edn" :en :settings))
 
 (defn show-settings
   [req]
@@ -15,4 +19,4 @@
 (defn delete-user
   [req]
   (models/delete-user db (:id (friend/current-authentication req)))
-  (friend/logout* (respond-with/redirect "/" "Your account has been deleted.")))
+  (friend/logout* (respond-with/redirect "/" (t [:flash :deleted]))))
