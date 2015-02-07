@@ -27,7 +27,8 @@
       (GET "/lunches/pending" [] lunches/show-pending)
       (GET "/lunches/recommended" [] lunches/show-recommended)
       (GET "/settings" [] settings/show-settings)
-      (DELETE "/settings" [] settings/delete-user))
+      (DELETE "/settings" [] settings/delete-user)
+      (PUT "/settings" [] settings/update-settings))
     friend/wrap-authorize
     #{:lunchlotto.auth.handlers/user}))
 

@@ -3,6 +3,7 @@
             [environ.core :refer [env]])
   (:require [lunchlotto.common.responses :as respond-with]
             [lunchlotto.settings.models :as models]
+            [lunchlotto.settings.validations :as val]
             [lunchlotto.settings.views :as views]
             [lunchlotto.common.utils :as utils]))
 
@@ -18,7 +19,22 @@
                (:id (friend/current-authentication req)))]
     (respond-with/ok
       (views/show-settings {:current-user (friend/current-authentication req)
-                            :params user}))))
+                            :params user
+                            :flash (:flash req)}))))
+
+(defn update-settings
+  [req]
+  (let [params (:params req)
+        [valid? data] (val/validate-settings
+                        (assoc params
+                               :latitude (utils/parse-number (:latitude params))
+                               :longitude (utils/parse-number (:longitude params))))]
+    (if valid?
+      (do
+        (models/update-settings db data)
+        (respond-with/redirect "/settings" (t [:flash :updated])))
+      (respond-with/bad-request (views/show-settings {:current-user (friend/current-authentication req)
+                                                      :params data})))))
 
 (defn delete-user
   [req]
