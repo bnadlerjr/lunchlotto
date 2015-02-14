@@ -38,7 +38,7 @@
              :test {:env {:database-url "jdbc:postgresql://localhost/lunchlotto_test"}
                     :dependencies [[ring/ring-mock "0.2.0"]]}}
   :plugins [[lein-environ "1.0.0"]
-            [lein-ancient "0.6.1"]
+            [lein-ancient "0.6.2"]
             [lein-kibit "0.0.8"]
             [jonase/eastwood "0.2.1"]
             [lein-bikeshed "0.2.0"]
