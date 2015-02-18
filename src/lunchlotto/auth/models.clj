@@ -2,8 +2,7 @@
   (:require [clj-time.coerce :as coerce]
             [clj-time.core :as time]
             [clojure.java.jdbc :as jdbc])
-  (:require [lunchlotto.auth.utils :as utils]
-            [lunchlotto.auth.utils :as auth-utils]))
+  (:require [lunchlotto.auth.utils :as utils]))
 
 (defn register-user
   "Register a new user in the database. Assumes that the email address has
@@ -79,5 +78,5 @@
                                      WHERE is_confirmed=true
                                        AND email=?" email]))]
     (when (and user
-               (auth-utils/check-password password (:password user)))
+               (utils/check-password password (:password user)))
       user)))
