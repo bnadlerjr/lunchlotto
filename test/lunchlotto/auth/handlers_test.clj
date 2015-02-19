@@ -111,3 +111,13 @@
       (let [resp (handlers/confirm-user (assoc-in valid-params [:params :location] nil))]
         (is (= 400 (:status resp)))
         (is (contains (:body resp) "location must be present"))))))
+
+(deftest authenticate
+  (testing "successful authentication"
+    (with-redefs [models/authenticate-user (fn [_ _ _] {:id "abc-123"})]
+      (let [resp (handlers/authenticate {:username "jdoe" :password "secret"})]
+        (is (= {:roles #{:lunchlotto.auth.handlers/user} :username "jdoe" :id "abc-123"} resp)))))
+  (testing "invalid credentials"
+    (with-redefs [models/authenticate-user (fn [_ _ _])]
+      (let [resp (handlers/authenticate {})]
+        (is (nil? resp))))))
