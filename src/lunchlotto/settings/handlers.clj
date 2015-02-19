@@ -13,8 +13,12 @@
 
 (defn show-settings
   [req]
-  (respond-with/ok (views/show-settings {:current-user (friend/current-authentication req)
-                                         :params (friend/current-authentication req)})))
+  (let [user (models/find-user-by-id
+               db
+               (:id (friend/current-authentication req)))]
+    (respond-with/ok
+      (views/show-settings {:current-user (friend/current-authentication req)
+                            :params user}))))
 
 (defn delete-user
   [req]
