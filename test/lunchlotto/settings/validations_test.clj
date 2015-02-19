@@ -34,25 +34,25 @@
       (is (= {:location ["location must be present"]} (:errors data)))))
 
   (testing "latitude is required"
-    (let [[valid? data?] (val/validate-settings
+    (let [[valid? data] (val/validate-settings
                            (assoc params :latitude ""))]
       (is (false? valid?))
-      (is (= {:latitude ["latitude must be present"]}))))
+      (is (= {:latitude ["latitude must be present"]} (:errors data)))))
 
   (testing "latitude is a number"
-    (let [[valid? data?] (val/validate-settings
+    (let [[valid? data] (val/validate-settings
                            (assoc params :latitude "not a number"))]
       (is (false? valid?))
-      (is (= {:latitude ["latitude must be a number"]}))))
+      (is (= {:latitude ["latitude must be a number"]} (:errors data)))))
 
   (testing "longitude is required"
-    (let [[valid? data?] (val/validate-settings
+    (let [[valid? data] (val/validate-settings
                            (assoc params :longitude ""))]
       (is (false? valid?))
-      (is (= {:longitude ["longitude must be present"]}))))
+      (is (= {:longitude ["longitude must be present"]} (:errors data)))))
 
   (testing "longitude is a number"
-    (let [[valid? data?] (val/validate-settings
+    (let [[valid? data] (val/validate-settings
                            (assoc params :longitude "not a number"))]
       (is (false? valid?))
-      (is (= {:longitude ["longitude must be a number"]}))))))
+      (is (= {:longitude ["longitude must be a number"]} (:errors data)))))))
