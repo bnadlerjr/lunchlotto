@@ -45,3 +45,12 @@
       (is (= {:count 1} (get-user-count)))
       (is (false? (models/delete-user *txn* (java.util.UUID/randomUUID))))
       (is (= {:count 1} (get-user-count))))))
+
+(deftest find-user-by-id
+  (let [user (create-test-user)]
+    (testing "successfully find user"
+      (is (= {:count 1} (get-user-count)))
+      (is (= user (models/find-user-by-id *txn* (:id user)))))
+    (testing "user not found"
+      (is (= {:count 1} (get-user-count)))
+      (is (nil? (models/find-user-by-id *txn* (java.util.UUID/randomUUID)))))))
