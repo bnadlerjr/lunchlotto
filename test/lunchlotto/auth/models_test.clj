@@ -46,6 +46,7 @@
 (defn- create-confirmed-test-user
   []
   (create-test-user {:email "jdoe-confirmed@example.com"
+                     :password (utils/encrypt-password "secret")
                      :is_confirmed true}))
 
 (deftest register-user
@@ -140,3 +141,15 @@
 
     (testing "email cannot be found"
       (is (nil? (models/update-confirmation-token *txn* "no-such-email@example.com"))))))
+
+(deftest authenticate-user
+  (let [confirmed-user (create-confirmed-test-user)
+        unconfirmed-user (create-unconfirmed-test-user)]
+    (testing "successfully authenticate confirmed user"
+      (is (= confirmed-user (models/authenticate-user *txn* (:email confirmed-user) "secret"))))
+    (testing "unconfirmed users cannot be authenticated"
+      (is (nil? (models/authenticate-user *txn* (:email unconfirmed-user) "secret"))))
+    (testing "bad email"
+      (is (nil? (models/authenticate-user *txn* "bademail@example.com" "secret"))))
+    (testing "bad password"
+      (is (nil? (models/authenticate-user *txn* (:email confirmed-user) "invalid"))))))
