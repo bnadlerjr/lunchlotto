@@ -21,6 +21,12 @@
       (is (= 200 (:status resp)))
       (is (contains (:body resp) "Login")))))
 
+(deftest failed-login
+  (testing "successfully render failed login page"
+    (let [resp (handlers/failed-login {})]
+      (is (= 400 (:status resp)))
+      (is (contains (:body resp) "Sorry, that email and password combination is incorrect.")))))
+
 (deftest register-user
   (testing "valid email format and email is not in database"
     (with-redefs [models/find-user-by-email (fn [_ _])
