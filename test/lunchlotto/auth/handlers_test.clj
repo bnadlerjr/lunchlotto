@@ -15,6 +15,12 @@
       (is (= 200 (:status resp)))
       (is (contains (:body resp) "Register New User")))))
 
+(deftest show-login-page
+  (testing "successfully render login page"
+    (let [resp (handlers/show-login-page {})]
+      (is (= 200 (:status resp)))
+      (is (contains (:body resp) "Login")))))
+
 (deftest register-user
   (testing "valid email format and email is not in database"
     (with-redefs [models/find-user-by-email (fn [_ _])
