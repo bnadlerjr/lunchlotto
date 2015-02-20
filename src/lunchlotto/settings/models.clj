@@ -12,7 +12,7 @@
   [db id]
   (first (jdbc/query db ["SELECT * FROM users WHERE id=?" id])))
 
-(defn extract-settings-to-update
+(defn- extract-settings-to-update
   [params]
   (let [settings (select-keys params [:location :latitude :longitude])]
     (if (contains? params :new_password)
@@ -22,4 +22,4 @@
 (defn update-settings
   "Updates a user's settings."
    [db params]
-   (= [1] (jdbc/update! db :users (extract-settings-to-update params) ["id=?::uuid" (:id params)])))
+   (= [1] (jdbc/update! db :users (extract-settings-to-update params) ["id=?" (:id params)])))
