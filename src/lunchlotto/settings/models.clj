@@ -10,12 +10,13 @@
 (defn find-user-by-id
   "Finds a user by their ID. Returns nil if a user cannot be found."
   [db id]
-  (first (jdbc/query db ["SELECT * FROM users WHERE id=?" id])))
+  (first (jdbc/query db ["SELECT * FROM users WHERE id=?::uuid" id])))
 
 (defn- extract-settings-to-update
   [params]
   (let [settings (select-keys params [:location :latitude :longitude])]
-    (if (contains? params :new_password)
+    (if (and (contains? params :new_password)
+             (not (clojure.string/blank? (:new_password params))))
       (merge settings {:password (utils/encrypt-password (:new_password params))})
       settings)))
 

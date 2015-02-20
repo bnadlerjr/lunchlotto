@@ -2,7 +2,8 @@
   (:require [clojure.test :refer :all]
             [cemerick.friend :as friend])
   (:require [lunchlotto.settings.handlers :as handlers]
-            [lunchlotto.settings.models :as models]))
+            [lunchlotto.settings.models :as models]
+            [lunchlotto.auth.utils :as auth-utils]))
 
 (deftest show-settings
   (testing "successfully render settings page"
@@ -13,7 +14,9 @@
 
 (deftest update-settings
   (testing "successfully update settings"
-    (with-redefs [models/update-settings (fn [_ _] true)]
+    (with-redefs [models/update-settings (fn [_ _] true)
+                  models/find-user-by-id (fn [_ _] {})
+                  auth-utils/check-password (fn [_ _] true)]
       (let [req {:params {:current_password "secret"
                           :location "Somewhere"
                           :latitude -42.123

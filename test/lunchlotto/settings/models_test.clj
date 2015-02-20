@@ -68,7 +68,7 @@
 
   (testing "successfully update location info only"
     (let [user (create-test-user "jake@example.com")
-          params {:id (:id user) :location "Anywhere" :latitude 10.1 :longitude 20.2}]
+          params {:id (:id user) :new_password "" :location "Anywhere" :latitude 10.1 :longitude 20.2}]
       (is (true? (models/update-settings *txn* params)))
       (let [updated-user (models/find-user-by-id *txn* (:id user))]
         (is (true? (auth-utils/check-password "secret" (:password updated-user))))

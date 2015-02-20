@@ -5,7 +5,8 @@
             [lunchlotto.settings.models :as models]
             [lunchlotto.settings.validations :as val]
             [lunchlotto.settings.views :as views]
-            [lunchlotto.common.utils :as utils]))
+            [lunchlotto.common.utils :as utils]
+            [lunchlotto.auth.utils :as auth-utils]))
 
 (def db (env :database-url))
 
@@ -24,13 +25,21 @@
 
 (defn update-settings
   [req]
-  (let [[valid? data] (val/validate-settings (:params req))]
-    (if valid?
-      (do
-        (models/update-settings db data)
-        (respond-with/redirect "/settings" (t [:flash :updated])))
-      (respond-with/bad-request (views/show-settings {:current-user (friend/current-authentication req)
-                                                      :params data})))))
+  (let [[valid? data] (val/validate-settings (:params req))
+        user (models/find-user-by-id db (:id data))]
+    (cond (not valid?)
+          (respond-with/bad-request (views/show-settings {:current-user (friend/current-authentication req)
+                                                          :params data}))
+          (and user
+               (auth-utils/check-password (:current_password data) (:password user)))
+          (do
+            (models/update-settings db data)
+            (respond-with/redirect "/settings" (t [:flash :updated])))
+
+          :else
+          (respond-with/bad-request
+            (views/show-settings {:current-user (friend/current-authentication req)
+                                  :params (assoc (assoc-in data [:errors] {:current_password "current password is invalid"}) :email (:email user))})))))
 
 (defn delete-user
   [req]
