@@ -3,15 +3,19 @@
             [environ.core :refer [env]]
             [postmark.core :as pm]))
 
-(defn parse-number
-  "Convert a string to a number. Return nil if not a number.
+(defn fmap
+  "Applies a function to each value in the given map."
+  [f coll]
+  (into {} (for [[k v] coll] [k (f v)])))
 
-  Since read-string is used, it checks the string against a regex to ensure the
-  string looks like a number."
+(defn string->number
+  "Convert a string to a number. Return the unaltered string if it does not
+  look like a number."
   [s]
   (if (and (not (nil? s))
            (re-find #"^-?\d+\.?\d*$" s))
-    (edn/read-string s)))
+    (edn/read-string s)
+    s))
 
 (defn make-translation-dictionary
   "Loads the given EDN file and returns a function that can be used to look up

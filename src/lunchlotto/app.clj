@@ -18,6 +18,7 @@
   (wrap-defaults
     (-> application-routes
         middleware/wrap-content-type-html
+        middleware/wrap-coerce-params
         (cond->
           debug-mode? wrap-exceptions
           (not debug-mode?) middleware/wrap-exception-notifier

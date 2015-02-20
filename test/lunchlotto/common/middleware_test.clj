@@ -1,6 +1,7 @@
 (ns lunchlotto.common.middleware-test
   (:require [clojure.test :refer :all]
-            [lunchlotto.common.middleware :refer [wrap-simulated-methods]]))
+            [lunchlotto.common.middleware :refer [wrap-coerce-params
+                                                  wrap-simulated-methods]]))
 
 (deftest wrap-simulated-methods-middleware
   (let [middleware (wrap-simulated-methods identity)]
@@ -26,3 +27,9 @@
                      :params {"_method" "foo"}}
             response (middleware request)]
         (is (= :post (:request-method response)))))))
+
+(deftest wrap-coerce-params-middleware
+  (let [middleware (wrap-coerce-params identity)
+        request {:params {:foo "1" :bar "text"}}
+        response (middleware request)]
+    (is (= {:params {:foo 1 :bar "text"}} response))))

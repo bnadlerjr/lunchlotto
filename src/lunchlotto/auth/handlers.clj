@@ -75,12 +75,7 @@
 (defn confirm-user
   "Finish the user registration and confirm the new user."
   [req]
-  (let [params (:params req)
-        [valid? data]
-        (val/validate-registration
-          (assoc params
-            :latitude (utils/parse-number (:latitude params))
-            :longitude (utils/parse-number (:longitude params))))]
+  (let [[valid? data] (val/validate-registration (:params req))]
     (if valid?
       (do
         (models/confirm-user db data)

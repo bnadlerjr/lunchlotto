@@ -92,3 +92,10 @@
         {:status 500
          :headers {}
          :body "Oops! Something went wrong!"}))))
+
+(defn wrap-coerce-params
+  "Coerces params that look like numbers into actual numbers."
+  [hdlr]
+  (fn [req]
+    (let [coerced-params (utils/fmap utils/string->number (:params req))]
+      (hdlr (assoc req :params coerced-params)))))

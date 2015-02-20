@@ -90,8 +90,8 @@
   (let [valid-params {:params {:password              "secret"
                                :password_confirmation "secret"
                                :location              "Somewhere"
-                               :latitude              "42.123"
-                               :longitude             "-42.123"}}]
+                               :latitude              42.123
+                               :longitude             -42.123}}]
     (testing "successfully confirm user"
       (with-redefs [models/confirm-user (fn [_ _])]
         (let [resp (handlers/confirm-user valid-params)]

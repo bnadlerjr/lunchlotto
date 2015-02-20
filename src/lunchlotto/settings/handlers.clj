@@ -24,11 +24,7 @@
 
 (defn update-settings
   [req]
-  (let [params (:params req)
-        [valid? data] (val/validate-settings
-                        (assoc params
-                               :latitude (utils/parse-number (:latitude params))
-                               :longitude (utils/parse-number (:longitude params))))]
+  (let [[valid? data] (val/validate-settings (:params req))]
     (if valid?
       (do
         (models/update-settings db data)
