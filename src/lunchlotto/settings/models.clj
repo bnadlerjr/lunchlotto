@@ -22,4 +22,4 @@
 (defn update-settings
   "Updates a user's settings."
    [db params]
-   (= [1] (jdbc/update! db :users (extract-settings-to-update params) ["id=?" (:id params)])))
+   (= [1] (jdbc/update! db :users (extract-settings-to-update params) ["id=?::uuid" (:id params)])))
