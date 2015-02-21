@@ -93,7 +93,8 @@
                                :latitude              42.123
                                :longitude             -42.123}}]
     (testing "successfully confirm user"
-      (with-redefs [models/confirm-user (fn [_ _])]
+      (with-redefs [models/confirm-user (fn [_ _])
+                    models/find-user-by-email (fn [_ _])]
         (let [resp (handlers/confirm-user valid-params)]
           (is (= 302 (:status resp)))
           (is (= {"Location" "/lunches/upcoming"} (:headers resp)))
