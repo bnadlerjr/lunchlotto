@@ -26,10 +26,13 @@
 (defn update-settings
   [req]
   (let [[valid? data] (val/validate-settings (:params req))
-        user (models/find-user-by-id db (:id data))]
+        user (models/find-user-by-id db (:id data))
+        response-context {:current-user (friend/current-authentication req)
+                          :params (assoc data :email (:email user))}]
+
     (cond (not valid?)
-          (respond-with/bad-request (views/show-settings {:current-user (friend/current-authentication req)
-                                                          :params data}))
+          (respond-with/bad-request (views/show-settings response-context))
+
           (and user
                (auth-utils/check-password (:current_password data) (:password user)))
           (do
@@ -38,8 +41,8 @@
 
           :else
           (respond-with/bad-request
-            (views/show-settings {:current-user (friend/current-authentication req)
-                                  :params (assoc (assoc-in data [:errors] {:current_password "current password is invalid"}) :email (:email user))})))))
+            (views/show-settings (assoc-in response-context [:params :errors]
+                                           {:current_password (t [:flash :invalid_current_password])}))))))
 
 (defn delete-user
   [req]
