@@ -79,10 +79,12 @@
     (if valid?
       (do
         (models/confirm-user db data)
-        (friend/merge-authentication
-          (respond-with/redirect "/lunches/upcoming" (t [:flash :registered]))
-          {:username (:email data)
-           :roles #{::user}}))
+        (let [user (models/find-user-by-email db (:email data))]
+          (friend/merge-authentication
+            (respond-with/redirect "/lunches/upcoming" (t [:flash :registered]))
+            {:id (:id user)
+             :username (:email data)
+             :roles #{::user}})))
       (respond-with/bad-request (views/confirmation-page {:params data})))))
 
 (defn authenticate
