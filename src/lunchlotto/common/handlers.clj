@@ -1,8 +1,7 @@
 (ns lunchlotto.common.handlers
-  (:require [lunchlotto.common.responses :as respond-with]
-            [lunchlotto.common.views :as views]))
+  (:require [lunchlotto.common.responses :as response]))
 
 (defn home
   "The home page handler."
   [req]
-  (respond-with/ok (views/home-page (select-keys req [:flash]))))
+  (response/render :ok [:common :home]))

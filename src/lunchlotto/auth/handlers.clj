@@ -2,9 +2,8 @@
   (:require [environ.core :refer [env]]
             [cemerick.friend :as friend])
   (:require [lunchlotto.auth.models :as models]
-            [lunchlotto.common.responses :as respond-with]
+            [lunchlotto.common.responses :as response]
             [lunchlotto.auth.validations :as val]
-            [lunchlotto.auth.views :as views]
             [lunchlotto.common.utils :as utils]
             [lunchlotto.auth.email :as email]))
 
@@ -16,12 +15,12 @@
 (defn show-registration-page
   "Show the new user registration page."
   [req]
-  (respond-with/ok (views/register-page (select-keys req [:params]))))
+  (response/render :ok [:auth :register] {:user (:params req)}))
 
 (defn show-login-page
   "Show the user login page."
   [_]
-  (respond-with/ok (views/login-page)))
+  (response/render :ok [:auth :login]))
 
 (defn show-confirmation-page
   "Retrieve the user based on the confirmation token and render the
@@ -30,10 +29,9 @@
   (let [token (get-in req [:params :confirmation_token])
         user (models/find-user-by-confirmation-token db token)]
     (if user
-      (respond-with/ok
-        (views/confirmation-page
-          (assoc-in (select-keys req [:params]) [:params :email] (:email user))))
-      (respond-with/redirect "/" (t [:flash :invalid-token])))))
+      (response/render :ok [:auth :confirm]
+            {:user (assoc (:params req) :email (:email user))})
+      (response/redirect "/" (t [:flash :invalid-token])))))
 
 (defn register-user
   "Register a new user. Sends an email with a password token to the email
@@ -44,21 +42,20 @@
         user (models/find-user-by-email db (:email data))]
 
     (cond (not valid?)
-          (respond-with/bad-request (views/register-page {:params data}))
+          (response/render :bad-request [:auth :register] {:user data})
 
           (and user (:is_confirmed user))
-          (respond-with/redirect "/" (t [:flash :email-used]))
+          (response/redirect "/" (t [:flash :email-used]))
 
           (and user (not (:is_confirmed user)))
-          (respond-with/ok
-            (views/register-page
-              {:params (assoc data :errors
-                                   {:email             (t [:validations :email :used])
-                                    :can_resend_token? true})}))
+          (response/render :ok [:auth :register]
+                {:user (assoc data :errors
+                                   {:email             [(t [:validations :email :used])]
+                                    :can_resend_token? true})})
           :else
           (let [token (models/register-user db (:email data))]
             (email/send-confirmation-email (:email data) token req)
-            (respond-with/redirect "/" (t [:flash :confirmation-sent]))))))
+            (response/redirect "/" (t [:flash :confirmation-sent]))))))
 
 (defn update-confirmation-token
   "Updates a user's confirmation token and re-sends confirmation email."
@@ -67,10 +64,9 @@
     (if valid?
       (let [token (models/update-confirmation-token db (:email data))]
         (email/send-confirmation-email (:email data) token req)
-        (respond-with/redirect "/" (t [:flash :confirmation-sent])))
-      (respond-with/bad-request
-        (views/register-page
-          {:params (assoc-in data [:errors :can_resend_token?] true)})))))
+        (response/redirect "/" (t [:flash :confirmation-sent])))
+      (response/render :bad-request [:auth :register]
+                     {:user (assoc-in data [:errors :can_resend_token?] true)}))))
 
 (defn confirm-user
   "Finish the user registration and confirm the new user."
@@ -81,11 +77,11 @@
         (models/confirm-user db data)
         (let [user (models/find-user-by-email db (:email data))]
           (friend/merge-authentication
-            (respond-with/redirect "/lunches/upcoming" (t [:flash :registered]))
+            (response/redirect "/lunches/upcoming" (t [:flash :registered]))
             {:id (:id user)
              :username (:email data)
              :roles #{::user}})))
-      (respond-with/bad-request (views/confirmation-page {:params data})))))
+      (response/render :bad-request [:auth :confirm] {:user data}))))
 
 (defn authenticate
   "Authenticates a user with the given username (email) and password."
@@ -95,4 +91,5 @@
 
 (defn failed-login
   [_]
-  (respond-with/bad-request (views/login-page {:flash (t [:flash :invalid-creds])})))
+  (response/render :bad-request [:auth :login]
+                 {:flash (t [:flash :invalid-creds])}))

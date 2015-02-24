@@ -7,7 +7,10 @@
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.logging :as logging]
             [lunchlotto.common.middleware :as middleware]
-            [lunchlotto.routes :refer [application-routes]]))
+            [lunchlotto.routes :refer [application-routes]]
+
+            ; Ensure custom tags are available in templates
+            [lunchlotto.common.tags]))
 
 (def debug-mode? (env :debug false))
 
@@ -17,7 +20,6 @@
 (def application
   (wrap-defaults
     (-> application-routes
-        middleware/wrap-content-type-html
         middleware/wrap-coerce-params
         (cond->
           debug-mode? wrap-exceptions

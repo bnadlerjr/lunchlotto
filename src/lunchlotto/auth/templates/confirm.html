@@ -1,0 +1,38 @@
+{% extends "lunchlotto/common/templates/layout.html" %}
+{% block content %}
+<h2>Finish Registration</h2>
+<p>Thanks for confirming your email address! Follow the steps below to finish your registration.</p>
+<form action="/confirm" method="POST">
+    {% csrf-tag %}
+    <div class="form-group {% if user.errors.password %}has-error{% endif %}">
+        <label class="control-label" for="password">Password</label>
+        <input class="form-control" id="password" name="password" type="password" required autofocus />
+        {% if user.errors.password %}
+        <span class="help-block">{{user.errors.password|join:", "}}</span>
+        {% endif %}
+    </div>
+    <div class="form-group {% if user.errors.password_confirmation %}has-error{% endif %}">
+        <label class="control-label" for="password_confirmation">Retype Password</label>
+        <input class="form-control" id="password_confirmation" name="password_confirmation" type="password" required />
+        {% if user.errors.password_confirmation %}
+        <span class="help-block">{{user.errors.password_confirmation|join:", "}}</span>
+        {% endif %}
+    </div>
+    <div class="form-group {% if user.errors.location %}has-error{% endif %}">
+        <label class="control-label" for="location">Location</label>
+        <input class="form-control" id="location" name="location" type="text" value="{{user.location}}" required />
+        {% if user.errors.location %}
+        <span class="help-block">{{user.errors.location|join:", "}}</span>
+        {% else %}
+        <span class="help-block">In order to recommend lunches with people near you, we need to know your location. You can always change it later.</span>
+        {% endif %}
+    </div>
+    <input id="email" name="email" type="hidden" value="{{user.email}}" />
+    <input id="confirmation_token" name="confirmation_token" type="hidden" value="{{user.confirmation_token}}" />
+    <input id="latitude" name="latitude" type="hidden" value="{{user.latitude}}" />
+    <input id="longitude" name="longitude" type="hidden" value="{{user.longitude}}" />
+    <div class="form-group">
+        <input class="btn btn-primary" type="submit" value="Finish Registration" />
+    </div>
+</form>
+{% endblock %}

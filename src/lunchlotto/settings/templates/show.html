@@ -1,0 +1,70 @@
+{% extends "lunchlotto/common/templates/layout.html" %}
+{% block content %}
+<h2>Settings</h2>
+<form action="/settings" method="POST">
+    <input id="_method" name="_method" type="hidden" value="PUT">
+    {% csrf-tag %}
+    <div class="form-group">
+        <label class="control-label" for="email">Email</label>
+        <input class="form-control" id="email" name="email" type="email" disabled value="{{user.email}}" />
+    </div>
+    <div class="form-group {% if user.errors.current_password %}has-error{% endif %}">
+        <label class="control-label" for="current_password">Current Password</label>
+        <input class="form-control" id="current_password" name="current_password" type="password" required autofocus />
+        {% if user.errors.current_password %}
+        <span class="help-block">{{user.errors.current_password|join:", "}}</span>
+        {% endif %}
+    </div>
+    <div class="form-group {% if user.errors.new_password %}has-error{% endif %}">
+        <label class="control-label" for="new_password">New Password</label>
+        <input class="form-control" id="new_password" name="new_password" type="password" />
+        <span class="help-block">
+        {% if user.errors.new_password %}
+            {{user.errors.new_password|join:", "}}
+        {% else %}
+            Optional - Leave this blank if you only need to update your location.
+        {% endif %}
+        </span>
+    </div>
+    <div class="form-group {% if user.errors.new_password_confirmation %}has-error{% endif %}">
+        <label class="control-label" for="new_password_confirmation">Retype New Password</label>
+        <input class="form-control" id="new_password_confirmation" name="new_password_confirmation" type="password" />
+        <span class="help-block">
+        {% if user.errors.new_password_confirmation %}
+            {{user.errors.new_password_confirmation|join:", "}}
+        {% else %}
+            Optional - Leave blank unless you are changing your password.
+        {% endif %}
+        </span>
+    </div>
+    <div class="form-group {% if user.errors.location %}has-error{% endif %}">
+        <label class="control-label" for="location">Location</label>
+        <input class="form-control" id="location" name="location" type="text" value="{{user.location}}" required />
+        {% if user.errors.location %}
+        <span class="help-block">{{user.errors.location|join:", "}}</span>
+        {% endif %}
+    </div>
+    <input id="id" name="id" type="hidden" value="{{user.id}}" />
+    <input id="latitude" name="latitude" type="hidden" value="{{user.latitude}}" />
+    <input id="longitude" name="longitude" type="hidden" value="{{user.longitude}}" />
+    <div class="form-group">
+        <input class="btn btn-primary" type="submit" value="Update Settings" />
+    </div>
+</form>
+<hr />
+<div class="panel panel-danger">
+    <div class="panel-heading">
+        <h3 class="panel-title">Delete Account</h3>
+        <div class="panel-body">
+            <p>Warning! This cannot be undone!</p>
+            <form action="/settings" method="POST">
+                <input id="_method" name="_method" type="hidden" value="DELETE" />
+                {% csrf-tag %}
+                <div class="form-group">
+                    <input class="btn btn-danger" type="submit" value="Delete Account" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

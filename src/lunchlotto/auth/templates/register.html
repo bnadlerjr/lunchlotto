@@ -1,0 +1,24 @@
+{% extends "lunchlotto/common/templates/layout.html" %}
+{% block content %}
+<h2>Register New User</h2>
+<form action="/register" method="POST">
+    {% if user.errors.can_resend_token? %}
+    <input id="_method" name="_method" type="hidden" value="PUT">
+    {% endif %}
+    {% csrf-tag %}
+    <div class="form-group {% if user.errors.email %}has-error{% endif %}">
+        <label class="control-label" for="email">Cyrus Email</label>
+        <input class="form-control" id="email" name="email" type="email" value="{{user.email}}" required autofocus />
+        {% if user.errors.email %}
+        <span class="help-block">{{user.errors.email|join:", "}}</span>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {% if user.errors.can_resend_token? %}
+        <input class="btn btn-primary" type="submit" value="Re-send Confirmation Email" />
+        {% else %}
+        <input class="btn btn-primary" type="submit" value="Register" />
+        {% endif %}
+    </div>
+</form>
+{% endblock %}

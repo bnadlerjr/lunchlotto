@@ -1,10 +1,9 @@
 (ns lunchlotto.settings.handlers
   (:require [cemerick.friend :as friend]
             [environ.core :refer [env]])
-  (:require [lunchlotto.common.responses :as respond-with]
+  (:require [lunchlotto.common.responses :as response]
             [lunchlotto.settings.models :as models]
             [lunchlotto.settings.validations :as val]
-            [lunchlotto.settings.views :as views]
             [lunchlotto.common.utils :as utils]
             [lunchlotto.auth.utils :as auth-utils]))
 
@@ -18,33 +17,27 @@
   (let [user (models/find-user-by-id
                db
                (:id (friend/current-authentication req)))]
-    (respond-with/ok
-      (views/show-settings {:current-user (friend/current-authentication req)
-                            :params user
-                            :flash (:flash req)}))))
+    (response/render :ok [:settings :show] {:user user})))
 
 (defn update-settings
   [req]
   (let [[valid? data] (val/validate-settings (:params req))
         user (models/find-user-by-id db (:id data))
-        response-context {:current-user (friend/current-authentication req)
-                          :params (assoc data :email (:email user))}]
+        response-context (assoc data :email (:email user))]
 
     (cond (not valid?)
-          (respond-with/bad-request (views/show-settings response-context))
+          (response/render :bad-request [:settings :show] {:user response-context})
 
           (and user
                (auth-utils/check-password (:current_password data) (:password user)))
           (do
             (models/update-settings db data)
-            (respond-with/redirect "/settings" (t [:flash :updated])))
+            (response/redirect "/settings" (t [:flash :updated])))
 
           :else
-          (respond-with/bad-request
-            (views/show-settings (assoc-in response-context [:params :errors]
-                                           {:current_password (t [:flash :invalid_current_password])}))))))
+          (response/render :bad-request [:settings :show] {:user (assoc-in response-context [:errors] {:current_password [(t [:flash :invalid_current_password])]})}))))
 
 (defn delete-user
   [req]
   (models/delete-user db (:id (friend/current-authentication req)))
-  (friend/logout* (respond-with/redirect "/" (t [:flash :deleted]))))
+  (friend/logout* (response/redirect "/" (t [:flash :deleted]))))

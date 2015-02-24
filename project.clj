@@ -16,7 +16,6 @@
                                                 org.apache.httpcomponents/httpclient
                                                 org.clojure/tools.reader]]
                  [com.cemerick/friend "0.2.1"]
-                 [hiccup "1.0.5"]
                  [http-kit "2.1.19"]
                  [java-jdbc/dsl "0.1.1"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
@@ -30,7 +29,8 @@
                  [postgresql/postgresql "9.3-1102.jdbc41"]
                  [prone "0.8.1"]
                  [ring "1.3.2"]
-                 [ring/ring-defaults "0.1.4"]]
+                 [ring/ring-defaults "0.1.4"]
+                 [selmer "0.8.0"]]
   :min-lein-version "2.0.0"
   :uberjar-name "lunchlotto.jar"
   :main lunchlotto.app
