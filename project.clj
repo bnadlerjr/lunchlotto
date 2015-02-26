@@ -28,7 +28,7 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [pandect "0.5.1"]
                  [postgresql/postgresql "9.3-1102.jdbc41"]
-                 [prone "0.8.0"]
+                 [prone "0.8.1"]
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.4"]]
   :min-lein-version "2.0.0"
