@@ -15,5 +15,4 @@
   :settings
   {:flash
    {:deleted "Your account has been deleted."
-    :invalid_current_password "current password is invalid"
     :updated "Your settings have been updated."}}}}

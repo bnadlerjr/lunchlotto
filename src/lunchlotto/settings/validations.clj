@@ -1,6 +1,7 @@
 (ns lunchlotto.settings.validations
   (:require [bouncer.core :as bouncer]
-            [bouncer.validators :as validators]
+            [bouncer.validators :as validators])
+  (:require [lunchlotto.auth.utils :as auth-utils]
             [lunchlotto.common.utils :as utils]))
 
 (def t (utils/make-translation-dictionary
@@ -20,13 +21,20 @@
   [value confirm]
   (= value confirm))
 
+(validators/defvalidator
+  correct-password
+  {:default-message-format "current password is invalid"}
+  [value password]
+  (auth-utils/check-password value password))
+
 (defn validate-settings
   "Validates user settings."
-  [params]
+  [params current-password]
   (wrap-validation
     (bouncer/validate
       params
-      {:current_password          validators/required
+      {:current_password          [validators/required
+                                   [correct-password current-password]]
        :new_password_confirmation [[is-same (:new_password params)
                                     :message (t [:password :mismatch])]]
        :location                  validators/required
