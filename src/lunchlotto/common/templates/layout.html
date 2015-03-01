@@ -13,9 +13,7 @@
                     </div>
                     <ul class="nav navbar-nav">
                         {% ifequal "#{:lunchlotto.auth.handlers/user}" current-auth.roles|str %}
-                        <li><a href="/lunches/upcoming">Upcoming</a></li>
-                        <li><a href="/lunches/pending">Pending</a></li>
-                        <li><a href="/lunches/recommended">Recommended</a></li>
+                        <li><a href="/lunches">Lunches</a></li>
                         <li><a href="/settings">Settings</a></li>
                         <li><a href="/logout">Logout</a></li>
                         {% else %}

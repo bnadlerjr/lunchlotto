@@ -1,0 +1,38 @@
+<h2>Upcoming Lunches</h2>
+<ul class="media-list">
+    {% for lunch in lunches %}
+    <li class="media {% ifequal "Pending" lunch.status %}bg-warning{% endifequal %}">
+        <div class="media-left">
+            <img class="media-object" src="{{lunch.venue.image_url}}" alt="{{lunch.venue.name}}" />
+        </div>
+        <div class="media-body">
+            <table class="table">
+                <tr>
+                    <th>Status</th>
+                    <td>{{lunch.status}}</td>
+                </tr>
+                <tr>
+                    <th>Who</th>
+                    <td><h4 class="media-heading">{{lunch.attendees|join:", "}}</h4></td>
+                </tr>
+                <tr>
+                    <th>When</th>
+                    <td>
+                        <time datetime="{{lunch.lunch_at}}">
+                            {{lunch.lunch_at|date:"EEEE, MMMM d @ h:KKa"}}
+                        </time>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Where</th>
+                    <td>
+                        <a href="{{lunch.venue.url}}">{{lunch.venue.name}}</a>
+                        <br />
+                        {{lunch.venue.display_address|join:"<br />"|safe}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </li>
+    {% endfor %}
+</ul>

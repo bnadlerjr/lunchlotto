@@ -23,9 +23,7 @@
 (def ^:private secure-user
   (wrap-routes
     (routes
-      (GET "/lunches/upcoming" [] lunches/show-upcoming)
-      (GET "/lunches/pending" [] lunches/show-pending)
-      (GET "/lunches/recommended" [] lunches/show-recommended)
+      (GET "/lunches" [] lunches/index)
       (GET "/settings" [] settings/show-settings)
       (DELETE "/settings" [] settings/delete-user)
       (PUT "/settings" [] settings/update-settings))

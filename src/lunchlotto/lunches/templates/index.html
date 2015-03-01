@@ -1,0 +1,11 @@
+{% extends "lunchlotto/common/templates/layout.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% include "lunchlotto/lunches/templates/_upcoming.html" %}
+    </div>
+    <div class="col-md-4">
+        {% include "lunchlotto/lunches/templates/_recommendation.html" %}
+    </div>
+</div>
+{% endblock %}

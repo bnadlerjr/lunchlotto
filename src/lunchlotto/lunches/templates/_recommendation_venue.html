@@ -1,0 +1,26 @@
+<div class="radio">
+    <label class="media">
+        <div class="media-left">
+            <input id="{{venue.id}}" name="venue" type="radio" value="{{venue.id}}" {% if forloop.first %}checked="checked"{% endif %} />
+            <img class="media-object" src="{{venue.image_url}}" alt="{{venue.name}}" />
+        </div>
+        <div class="media-body">
+            <h4 class="media-heading">
+                <span class="glyphicon glyphicon-new-window"></span>
+                <a href="{{venue.url}}" target="_blank">{{venue.name}}</a>
+            </h4>
+            <p>
+                <img src="{{venue.rating_img_url_small}}" alt="Rating: {{venue.rating}}" />
+                {{venue.review_count}} reviews
+            </p>
+            <p>
+                <span class="glyphicon glyphicon-map-marker"></span>
+                {{venue.display_address|join:"<br />"|safe}}
+            </p>
+            <p>
+                <span class="glyphicon glyphicon-earphone"></span>
+                {{venue.display_phone}}
+            </p>
+        </div>
+    </label>
+</div>
