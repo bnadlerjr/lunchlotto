@@ -91,5 +91,4 @@
 
 (defn failed-login
   [_]
-  (response/render :bad-request [:auth :login]
-                 {:flash (t [:flash :invalid-creds])}))
+  (response/redirect "/login" (t [:flash :invalid-creds])))

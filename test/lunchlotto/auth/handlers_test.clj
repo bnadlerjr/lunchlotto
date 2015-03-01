@@ -24,10 +24,10 @@
 (deftest failed-login
   (testing "successfully render failed login page"
     (let [resp (handlers/failed-login {})]
-      (is (= 400 (.status resp)))
-      (is (= "lunchlotto/auth/templates/login.html" (.template resp)))
-      (is (= {:flash "Sorry, that email and password combination is incorrect."}
-             (.params resp))))))
+      (is (= 302 (:status resp)))
+      (is (= "/login" (get-in resp [:headers "Location"])))
+      (is (= "Sorry, that email and password combination is incorrect."
+             (:flash resp))))))
 
 (deftest register-user
   (testing "valid email format and email is not in database"
