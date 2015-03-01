@@ -11,16 +11,18 @@
 
 (declare ^:dynamic *txn*)
 
+(def database-url "jdbc:postgresql://localhost/lunchlotto_test")
+
 (use-fixtures
   :once
   (fn [f]
-    (migration/-main (env :database-url)) (f)))
+    (migration/-main database-url) (f)))
 
 (use-fixtures
   :each
   (fn [f]
     (jdbc/with-db-transaction
-      [transaction (env :database-url)]
+      [transaction database-url]
       (jdbc/db-set-rollback-only! transaction)
       (binding [*txn* transaction] (f)))))
 
