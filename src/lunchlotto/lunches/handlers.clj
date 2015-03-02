@@ -80,5 +80,5 @@
 
 (defn index
   [req]
-  (response/render :ok [:lunches :index] {:lunches upcoming
-                                          :recommendation recommendation}))
+  (response/render :ok "lunches/index" {:lunches upcoming
+                                        :recommendation recommendation}))

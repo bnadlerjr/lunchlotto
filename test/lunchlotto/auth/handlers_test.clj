@@ -13,13 +13,13 @@
   (testing "successfully render registration page"
     (let [resp (handlers/show-registration-page {})]
       (is (= 200 (.status resp)))
-      (is (= "lunchlotto/auth/templates/register.html" (.template resp))))))
+      (is (= "auth/register.html" (.template resp))))))
 
 (deftest show-login-page
   (testing "successfully render login page"
     (let [resp (handlers/show-login-page {})]
       (is (= 200 (.status resp)))
-      (is (= "lunchlotto/auth/templates/login.html" (.template resp))))))
+      (is (= "auth/login.html" (.template resp))))))
 
 (deftest failed-login
   (testing "successfully render failed login page"
@@ -50,7 +50,7 @@
     (with-redefs [models/find-user-by-email (fn [_ _] {:is_confirmed false})]
       (let [resp (handlers/register-user {:params {:email "jdoe@cyrusinnovation.com"}})]
         (is (= 200 (.status resp)))
-        (is (= "lunchlotto/auth/templates/register.html" (.template resp)))
+        (is (= "auth/register.html" (.template resp)))
         (is (= {:user {:errors {:email ["email has already been used."]
                                 :can_resend_token? true}
                        :email  "jdoe@cyrusinnovation.com"}}
@@ -60,7 +60,7 @@
     (with-redefs [models/find-user-by-email (fn [_ _])]
       (let [resp (handlers/register-user {:params {:email "foo@example.com"}})]
         (is (= 400 (.status resp)))
-        (is (= "lunchlotto/auth/templates/register.html" (.template resp)))
+        (is (= "auth/register.html" (.template resp)))
         (is (= {:user {:errors {:email ["email must be from the cyrusinnovation.com domain"]}
                        :email  "foo@example.com"}}
                (.params resp)))))))
@@ -70,7 +70,7 @@
     (with-redefs [models/find-user-by-confirmation-token (fn [_ _] {:email "jdoe@cyrusinnovation.com"})]
       (let [resp (handlers/show-confirmation-page {})]
         (is (= 200 (.status resp)))
-        (is (= "lunchlotto/auth/templates/confirm.html" (.template resp)))
+        (is (= "auth/confirm.html" (.template resp)))
         (is (= {:user {:email "jdoe@cyrusinnovation.com"}} (.params resp))))))
 
   (testing "with invalid confirmation token"
@@ -114,19 +114,19 @@
     (testing "latitude is not number"
       (let [resp (handlers/confirm-user (assoc-in valid-params [:params :latitude] "not a number"))]
         (is (= 400 (.status resp)))
-        (is (= "lunchlotto/auth/templates/confirm.html" (.template resp)))
+        (is (= "auth/confirm.html" (.template resp)))
         (is (= ["latitude must be a number"] (get-in (.params resp) [:user :errors :latitude])))))
 
     (testing "longitude is not a number"
       (let [resp (handlers/confirm-user (assoc-in valid-params [:params :longitude] "not a number"))]
         (is (= 400 (.status resp)))
-        (is (= "lunchlotto/auth/templates/confirm.html" (.template resp)))
+        (is (= "auth/confirm.html" (.template resp)))
         (is (= ["longitude must be a number"] (get-in (.params resp) [:user :errors :longitude])))))
 
     (testing "any other validation error"
       (let [resp (handlers/confirm-user (assoc-in valid-params [:params :location] nil))]
         (is (= 400 (.status resp)))
-        (is (= "lunchlotto/auth/templates/confirm.html" (.template resp)))
+        (is (= "auth/confirm.html" (.template resp)))
         (is (= ["location must be present"] (get-in (.params resp) [:user :errors :location])))))))
 
 (deftest authenticate

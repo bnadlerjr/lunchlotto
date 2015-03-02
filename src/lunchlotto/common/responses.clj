@@ -18,17 +18,14 @@
 (def status-codes {:ok          200
                    :bad-request 400})
 
-(defn- find-template
-  [[scope filename]]
-  (str
-    (java.nio.file.Paths/get
-      "lunchlotto"
-      (into-array [(name scope) "templates" (str (name filename) ".html")]))))
+(defn- full-template-name
+  [template]
+  (str template ".html"))
 
 (defn render
   "Render a Selmer template."
   [status template & [params]]
-  (SelmerPage. (status status-codes) (find-template template) params))
+  (SelmerPage. (status status-codes) (full-template-name template) params))
 
 (defn redirect
   "Redirects to specified URL with an optional flash message."

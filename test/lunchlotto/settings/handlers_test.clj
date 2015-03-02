@@ -11,7 +11,7 @@
     (with-redefs [models/find-user-by-id (fn [_ _] {:id 1})]
       (let [response (handlers/show-settings {})]
         (is (= 200 (.status response)))
-        (is (= "lunchlotto/settings/templates/show.html" (.template response)))
+        (is (= "settings/show.html" (.template response)))
         (is (= {:user {:id 1}} (.params response)))))))
 
 (deftest update-settings
@@ -28,7 +28,7 @@
                   val/validate-settings (fn [_ _] [false {}])]
       (let [response (handlers/update-settings {})]
         (is (= 400 (.status response)))
-        (is (= "lunchlotto/settings/templates/show.html" (.template response)))
+        (is (= "settings/show.html" (.template response)))
         (is (= {:user {:email nil}} (.params response)))))))
 
 (deftest delete-user

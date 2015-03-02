@@ -4,4 +4,4 @@
 (defn home
   "The home page handler."
   [req]
-  (response/render :ok [:common :home]))
+  (response/render :ok "home"))

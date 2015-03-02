@@ -3,7 +3,8 @@
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.middleware.reload :refer [wrap-reload]]
             [environ.core :refer [env]]
-            [prone.middleware :refer [wrap-exceptions]])
+            [prone.middleware :refer [wrap-exceptions]]
+            [selmer.parser :as selmer])
   (:require [lunchlotto.migrations :as migrations]
             [lunchlotto.common.logging :as logging]
             [lunchlotto.common.middleware :as middleware]
@@ -33,6 +34,7 @@
   (try (migrations/-main (env :database-url))
        (catch Exception e
          (logging/error (.getMessage e))))
+  (selmer/set-resource-path! (clojure.java.io/resource "templates"))
   (run-server application {:port (Integer. port)})
   (logging/info "Server started" {:port port
                                   :debug debug-mode?}))

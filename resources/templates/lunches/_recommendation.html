@@ -15,7 +15,7 @@
             <div class="form-group">
                 <h5>Choose a restaurant:</h5>
                 {% for venue in recommendation.venues %}
-                {% include "lunchlotto/lunches/templates/_recommendation_venue.html" with venue=venue %}
+                {% include "lunches/_recommendation_venue.html" with venue=venue %}
                 {% if not forloop.last %}
                 <hr />
                 {% endif %}

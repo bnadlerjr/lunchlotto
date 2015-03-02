@@ -17,7 +17,7 @@
   (let [user (models/find-user-by-id
                db
                (:id (friend/current-authentication req)))]
-    (response/render :ok [:settings :show] {:user user})))
+    (response/render :ok "settings/show" {:user user})))
 
 (defn update-settings
   [req]
@@ -28,7 +28,7 @@
       (do
         (models/update-settings db data)
         (response/redirect "/settings" (t [:flash :updated])))
-      (response/render :bad-request [:settings :show]
+      (response/render :bad-request "settings/show"
                        {:user (assoc data :email (:email user))}))))
 
 (defn delete-user
