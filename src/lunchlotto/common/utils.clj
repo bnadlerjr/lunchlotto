@@ -8,6 +8,16 @@
   [f coll]
   (into {} (for [[k v] coll] [k (f v)])))
 
+(defn separate
+  "Separate a collection into two collections using predicate function."
+  [pred coll]
+  (reduce (fn [[yes no] item]
+            (if (pred item)
+              [(conj yes item) no]
+              [yes (conj no item)]))
+          [[] []]
+          coll))
+
 (defn string->number
   "Convert a string to a number. Return the unaltered string if it does not
   look like a number."

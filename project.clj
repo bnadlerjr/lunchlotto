@@ -16,6 +16,7 @@
                                                 org.apache.httpcomponents/httpclient
                                                 org.clojure/tools.reader]]
                  [com.cemerick/friend "0.2.1"]
+                 [gws/clj-yelp "0.3.1"]
                  [http-kit "2.1.19"]
                  [java-jdbc/dsl "0.1.1"]
                  [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
