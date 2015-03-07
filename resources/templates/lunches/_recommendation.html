@@ -5,8 +5,8 @@
             {% csrf-tag %}
             <div class="form-group">
                 <label class="control-label" for="who">Who</label>
-                <input type="hidden" value="{{recomendation.who-id}}" />
-                <input class="form-control" id="who" name="who" type="text" value="{{recommendation.who-name}}" disabled />
+                <input type="hidden" id="who" name="who" value="{{recommendation.who-id}}" />
+                <input class="form-control" type="text" value="{{recommendation.who-name}}" disabled />
             </div>
             <div class="form-group">
                 <label class="control-label" for="when">When</label>
