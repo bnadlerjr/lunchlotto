@@ -24,6 +24,7 @@
   (wrap-routes
     (routes
       (GET "/lunches" [] lunches/index)
+      (POST "/lunches" [] lunches/create)
       (GET "/settings" [] settings/show-settings)
       (DELETE "/settings" [] settings/delete-user)
       (PUT "/settings" [] settings/update-settings))

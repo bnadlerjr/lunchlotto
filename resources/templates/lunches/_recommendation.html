@@ -1,7 +1,7 @@
 <div class="panel panel-primary">
     <div class="panel-heading">Here's a Lunch Recommendation</div>
     <div class="panel-body">
-        <form>
+        <form action="/lunches" method="POST">
             {% csrf-tag %}
             <div class="form-group">
                 <label class="control-label" for="who">Who</label>

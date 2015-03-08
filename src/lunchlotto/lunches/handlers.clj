@@ -4,6 +4,7 @@
             [cemerick.friend :as friend])
   (:require [lunchlotto.common.responses :as response]
             [lunchlotto.lunches.models :as models]
+            [lunchlotto.lunches.validations :as val]
             [lunchlotto.services.venues :as venues]))
 
 (def db (env :database-url))
@@ -50,3 +51,12 @@
     {:lunches upcoming
      :recommendation (models/make-recommendation
                        db (:id (friend/current-authentication req)))}))
+
+(defn create
+  [req]
+  (let [[valid? data] (val/validate-lunch (:params req))]
+    (if valid?
+      (response/redirect "/lunches" "Lunch request sent.")
+      (response/render :bad-request "lunches/index"
+                       {:lunches upcoming
+                        :recommendation data}))))
