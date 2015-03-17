@@ -53,7 +53,7 @@
                                          {:email             [(t [:validations :email :used])]
                                           :can_resend_token? true})})
           :else
-          (let [token (models/register-user db (:email data))]
+          (let [token (models/register-user (:email data))]
             (email/send-confirmation-email (:email data) token req)
             (response/redirect "/" (t [:flash :confirmation-sent]))))))
 

@@ -3,10 +3,12 @@
             [clojure.java.jdbc :as jdbc]
             [environ.core :refer [env]]
             [clj-time.core :as time]
-            [clj-time.coerce :as coerce])
+            [clj-time.coerce :as coerce]
+            [lunchlotto.test-helpers :refer :all])
   (:require [lunchlotto.auth.models :as models]
             [lunchlotto.migrations :as migration]
-            [lunchlotto.auth.utils :as utils])
+            [lunchlotto.auth.utils :as utils]
+            [lunchlotto.common.queries :as q])
   (:import (org.postgresql.util PSQLException)))
 
 (declare ^:dynamic *txn*)
@@ -51,24 +53,20 @@
                      :password (utils/encrypt-password "secret")
                      :is_confirmed true}))
 
-(deftest register-user
-  (let [expected-token "abc123"
-        expected-email "jdoe@example.com"
-        expected-expiry (coerce/to-timestamp (time/now))]
-    (with-redefs [utils/generate-token (fn [] [expected-token expected-expiry])]
-      (let [token (models/register-user *txn* expected-email)
-            user (models/find-user-by-email *txn* expected-email)]
-
-        (testing "returns confirmation token"
-          (is (= expected-token token)))
-        (testing "stores email address"
-          (is (= expected-email (:email user))))
-        (testing "stores hashed value of registration token"
-          (is (= (utils/digest token) (:confirmation_token user))))
-        (testing "stores the registration token expiration timestamp"
-          (is (= expected-expiry (:confirmation_token_expires_at user))))
-        (testing "raises exception if email is not unique"
-          (is (thrown? PSQLException (models/register-user *txn* expected-email))))))))
+(defmocktest register-user-test
+  (stubbing [utils/generate-token ["00000000-0000-4000-8000-000000000000"
+                                   #inst "2015-03-14T21:06:14.064-00:00"]]
+    (mocking [q/insert-user!]
+      (let [token (models/register-user "jdoe@example.com")]
+        (testing "returns the raw confirmation token"
+          (is (= "00000000-0000-4000-8000-000000000000" token)))
+        (testing "stores the correct data"
+          (verify-call-times-for q/insert-user! 1)
+          (verify-first-call-args-for
+            q/insert-user!
+            {:email                         "jdoe@example.com"
+             :confirmation_token            "01e302b749e7ad2b46ba86e5ebd7c4e67580d94cc5b7bc1f96eb6e7e236f3b8ecf16a162f7359941bf25ec881b69418c777f4fe43cd91a95fa3286ad8e1d494d"
+             :confirmation_token_expires_at #inst "2015-03-14T21:06:14.064-00:00"}))))))
 
 (deftest find-user-by-email
   (let [[_ user] (create-unconfirmed-test-user)]

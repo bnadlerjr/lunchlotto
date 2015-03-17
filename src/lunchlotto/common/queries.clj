@@ -1,4 +1,5 @@
 (ns lunchlotto.common.queries
-  (:require [yesql.core :refer [defqueries]]))
+  (:require [environ.core :refer [env]]
+            [yesql.core :refer [defqueries]]))
 
-(defqueries "queries.sql")
+(defqueries "queries.sql" {:connection (env :database-url)})

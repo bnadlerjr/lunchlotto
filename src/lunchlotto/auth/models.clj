@@ -2,16 +2,17 @@
   (:require [clj-time.coerce :as coerce]
             [clj-time.core :as time]
             [clojure.java.jdbc :as jdbc])
-  (:require [lunchlotto.auth.utils :as utils]))
+  (:require [lunchlotto.auth.utils :as utils]
+            [lunchlotto.common.queries :as q]))
 
 (defn register-user
   "Register a new user in the database. Assumes that the email address has
   already been validated. Returns a registration token."
-  [db email]
+  [email]
   (let [[token expires] (utils/generate-token)]
-    (jdbc/insert! db :users {:email email
-                             :confirmation_token (utils/digest token)
-                             :confirmation_token_expires_at expires})
+    (q/insert-user! {:email email
+                     :confirmation_token (utils/digest token)
+                     :confirmation_token_expires_at expires})
     token))
 
 (defn find-user-by-confirmation-token
