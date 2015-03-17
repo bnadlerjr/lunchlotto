@@ -74,20 +74,20 @@
                  (.params response)))
           (verify-call-times-for email/send-confirmation-email 0))))))
 
-(deftest show-confirmation-page
+(defmocktest show-confirmation-page-test
   (testing "with valid confirmation token"
-    (with-redefs [models/find-user-by-confirmation-token (fn [_ _] {:email "jdoe@cyrusinnovation.com"})]
-      (let [resp (handlers/show-confirmation-page {})]
-        (is (= 200 (.status resp)))
-        (is (= "auth/confirm.html" (.template resp)))
-        (is (= {:user {:email "jdoe@cyrusinnovation.com"}} (.params resp))))))
+    (stubbing [models/find-user-by-confirmation-token {:email "jdoe@cyrusinnovation.com"}]
+      (let [response (handlers/show-confirmation-page {})]
+        (is (= 200 (.status response)))
+        (is (= "auth/confirm.html" (.template response)))
+        (is (= {:user {:email "jdoe@cyrusinnovation.com"}} (.params response))))))
 
   (testing "with invalid confirmation token"
-    (with-redefs [models/find-user-by-confirmation-token (fn [_ _])]
-      (let [resp (handlers/show-confirmation-page {})]
-        (is (= 302 (:status resp)))
-        (is (= "/" (get-in resp [:headers "Location"])))
-        (is (= "Invalid confirmation token." (:flash resp)))))))
+    (stubbing [models/find-user-by-confirmation-token nil]
+      (let [{:keys [:status :headers :flash]} (handlers/show-confirmation-page {})]
+        (is (= 302 status))
+        (is (= "/" (get headers "Location")))
+        (is (= "Invalid confirmation token." flash))))))
 
 (deftest update-confirmation-token
   (testing "successfully updated token"

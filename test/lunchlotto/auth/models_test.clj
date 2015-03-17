@@ -76,16 +76,18 @@
     (testing "user not found"
       (is (nil? (models/find-user-by-email *txn* "not-a-user@example.com"))))))
 
-(deftest find-user-by-confirmation-token
-  (let [[token user] (create-unconfirmed-test-user)]
-
-    (testing "successfully find user using raw token"
-      (is (= user (models/find-user-by-confirmation-token *txn* token))))
-    (testing "user not found"
-      (is (nil? (models/find-user-by-confirmation-token *txn* "invalid-token"))))
-    (testing "expired token"
-      (let [[expired-token _] (create-unconfirmed-test-user-with-expired-token)]
-        (is (nil? (models/find-user-by-confirmation-token *txn* expired-token)))))))
+(defmocktest find-user-by-confirmation-token-test
+  (testing "returns user map"
+    (stubbing [q/find-user-by-confirmation-token [{:id "abc123"}]]
+      (is (= {:id "abc123"} (models/find-user-by-confirmation-token "some-token")))))
+  (testing "digests token before querying"
+    (mocking [q/find-user-by-confirmation-token]
+      (models/find-user-by-confirmation-token "some-token")
+      (verify-call-times-for q/find-user-by-confirmation-token 1)
+      (verify-first-call-args-for q/find-user-by-confirmation-token "49e52e9fa1d1b3947356ff1c9e32b002bbd0dbf7437afc1f7b68b160fa034d7fbb627d1568f428e3c46d5c0849bc5d2a00f916c9dfd255a1166fdb431f1d2372")))
+  (testing "return nil if user not found"
+    (stubbing [q/find-user-by-confirmation-token []]
+      (is (nil? (models/find-user-by-confirmation-token "some-token"))))))
 
 (deftest confirm-user
   (let [[token user] (create-unconfirmed-test-user)

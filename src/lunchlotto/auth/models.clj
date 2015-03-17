@@ -17,15 +17,9 @@
 
 (defn find-user-by-confirmation-token
   "Finds a user by their registration token. If the token cannot be found or is
-   expired, returns nil."
-  [db token]
-  (first
-    (jdbc/query
-      db
-      ["SELECT * FROM users
-        WHERE   confirmation_token=?
-            AND confirmation_token_expires_at>?"
-       (utils/digest token) (coerce/to-timestamp (time/now))])))
+   expired, returns nil. Digests the token before making the query."
+  [token]
+  (first (q/find-user-by-confirmation-token (utils/digest token))))
 
 (defn find-user-by-email
   "Finds user by their email address. Returns nil if no user is found."
