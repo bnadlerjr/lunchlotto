@@ -68,13 +68,14 @@
              :confirmation_token            "01e302b749e7ad2b46ba86e5ebd7c4e67580d94cc5b7bc1f96eb6e7e236f3b8ecf16a162f7359941bf25ec881b69418c777f4fe43cd91a95fa3286ad8e1d494d"
              :confirmation_token_expires_at #inst "2015-03-14T21:06:14.064-00:00"}))))))
 
-(deftest find-user-by-email
-  (let [[_ user] (create-unconfirmed-test-user)]
+(defmocktest find-user-by-email-test
+  (testing "successfully found user"
+    (stubbing [q/find-user-by-email [{:id "abc123"}]]
+      (is (= {:id "abc123"} (models/find-user-by-email "jdoe@example.com")))))
 
-    (testing "successfully found user"
-      (is (= user (models/find-user-by-email *txn* (:email user)))))
-    (testing "user not found"
-      (is (nil? (models/find-user-by-email *txn* "not-a-user@example.com"))))))
+  (testing "user not found"
+    (stubbing [q/find-user-by-email []]
+      (is (nil? (models/find-user-by-email "jdoe@example.com"))))))
 
 (defmocktest find-user-by-confirmation-token-test
   (testing "returns user map"
@@ -84,7 +85,7 @@
     (mocking [q/find-user-by-confirmation-token]
       (models/find-user-by-confirmation-token "some-token")
       (verify-call-times-for q/find-user-by-confirmation-token 1)
-      (verify-first-call-args-for q/find-user-by-confirmation-token "49e52e9fa1d1b3947356ff1c9e32b002bbd0dbf7437afc1f7b68b160fa034d7fbb627d1568f428e3c46d5c0849bc5d2a00f916c9dfd255a1166fdb431f1d2372")))
+      (verify-first-call-args-for q/find-user-by-confirmation-token {:token "49e52e9fa1d1b3947356ff1c9e32b002bbd0dbf7437afc1f7b68b160fa034d7fbb627d1568f428e3c46d5c0849bc5d2a00f916c9dfd255a1166fdb431f1d2372"})))
   (testing "return nil if user not found"
     (stubbing [q/find-user-by-confirmation-token []]
       (is (nil? (models/find-user-by-confirmation-token "some-token"))))))
@@ -97,7 +98,7 @@
                                            :password "secret"
                                            :confirmation_token token
                                            :email (:email user)})
-        confirmed-user (models/find-user-by-email *txn* (:email user))]
+        confirmed-user (first (jdbc/query *txn* ["SELECT * FROM users WHERE email=?" (:email user)]))]
 
     (testing "returns true when confirmation is successful"
       (is (true? result)))
@@ -121,7 +122,7 @@
 
     (testing "successful update"
       (let [new-token (models/update-confirmation-token *txn* "jdoe@example.com")
-            updated-user (models/find-user-by-email *txn* "jdoe@example.com")]
+            updated-user (first (jdbc/query *txn* ["SELECT * FROM users WHERE email=?" "jdoe@example.com"]))]
         (testing "returns updated token"
           (is (not (= token new-token))))
         (testing "updates token"
@@ -133,7 +134,7 @@
     (testing "user is already confirmed"
       (let [user (create-confirmed-test-user)
             result (models/update-confirmation-token *txn* (:email user))
-            unchanged-user (models/find-user-by-email *txn* (:email user))]
+            unchanged-user (first (jdbc/query *txn* ["SELECT * FROM users WHERE email=?" (:email user)]))]
         (testing "returns nil"
           (is (nil? result)))
         (testing "does not change token"

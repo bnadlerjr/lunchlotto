@@ -5,7 +5,7 @@
 
 (deftest validate-email
   (testing "valid if domain is correct"
-    (with-redefs [models/find-user-by-email (fn [_ _] nil)]
+    (with-redefs [models/find-user-by-email (fn [_] nil)]
       (let [[valid? data] (val/validate-email {:email "foo@cyrusinnovation.com"})]
         (is (true? valid?))
         (is (= {:email "foo@cyrusinnovation.com"} data)))))

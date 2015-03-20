@@ -19,12 +19,12 @@
   "Finds a user by their registration token. If the token cannot be found or is
    expired, returns nil. Digests the token before making the query."
   [token]
-  (first (q/find-user-by-confirmation-token (utils/digest token))))
+  (first (q/find-user-by-confirmation-token {:token (utils/digest token)})))
 
 (defn find-user-by-email
   "Finds user by their email address. Returns nil if no user is found."
-  [db email]
-  (first (jdbc/query db ["SELECT * FROM users WHERE email=?" email])))
+  [email]
+  (first (q/find-user-by-email {:email email})))
 
 (defn confirm-user
   "Confirms a user and completes their registration. Returns true if

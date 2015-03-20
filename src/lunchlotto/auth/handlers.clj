@@ -27,7 +27,7 @@
   confirmation page."
   [req]
   (let [token (get-in req [:params :confirmation_token])
-        user (models/find-user-by-confirmation-token db token)]
+        user (models/find-user-by-confirmation-token {:token token})]
     (if user
       (response/render :ok "auth/confirm"
                        {:user (assoc (:params req) :email (:email user))})
@@ -39,7 +39,7 @@
   the user needs to check their email."
   [req]
   (let [[valid? data] (val/validate-email (:params req))
-        user (models/find-user-by-email db (:email data))]
+        user (models/find-user-by-email {:email (:email data)})]
 
     (cond (not valid?)
           (response/render :bad-request "auth/register" {:user data})
@@ -75,7 +75,7 @@
     (if valid?
       (do
         (models/confirm-user db data)
-        (let [user (models/find-user-by-email db (:email data))]
+        (let [user (models/find-user-by-email {:email (:email data)})]
           (friend/merge-authentication
             (response/redirect "/lunches/upcoming" (t [:flash :registered]))
             {:id (:id user)
