@@ -91,7 +91,7 @@
 
 (deftest update-confirmation-token
   (testing "successfully updated token"
-    (with-redefs [models/update-confirmation-token (fn [_ _] "some-token")
+    (with-redefs [models/update-confirmation-token (fn [_] "some-token")
                   email/send-confirmation-email (fn [_ _ _])]
       (let [resp (handlers/update-confirmation-token {:params {:email "jdoe@cyrusinnovation.com"}})]
         (is (= 302 (:status resp)))

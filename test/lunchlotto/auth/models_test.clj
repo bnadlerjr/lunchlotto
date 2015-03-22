@@ -117,33 +117,21 @@
     (testing "sets confirmation token expiry to null"
       (is (nil? (:confirmation_token_expires_at confirmed-user))))))
 
-(deftest update-confirmation-token
-  (let [[token user] (create-unconfirmed-test-user)]
+(defmocktest update-confirmation-token-test
+  (testing "successful update"
+    (stubbing [utils/generate-token ["abc123" "some date"]]
+      (mocking [q/update-user-confirmation-token!]
+        (let [token (models/update-confirmation-token "jdoe@example.com")]
+          (verify-call-times-for q/update-user-confirmation-token! 1)
+          (verify-first-call-args-for
+            q/update-user-confirmation-token!
+            {:confirmation_token "c70b5dd9ebfb6f51d09d4132b7170c9d20750a7852f00680f65658f0310e810056e6763c34c9a00b0e940076f54495c169fc2302cceb312039271c43469507dc"
+             :confirmation_token_expires_at "some date"
+             :email "jdoe@example.com"})))))
 
-    (testing "successful update"
-      (let [new-token (models/update-confirmation-token *txn* "jdoe@example.com")
-            updated-user (first (jdbc/query *txn* ["SELECT * FROM users WHERE email=?" "jdoe@example.com"]))]
-        (testing "returns updated token"
-          (is (not (= token new-token))))
-        (testing "updates token"
-          (is (= (utils/digest new-token) (:confirmation_token updated-user))))
-        (testing "resets expiry time"
-          (is (not (= (:confirmation_token_expires_at user)
-                      (:confirmation_token_expires_at updated-user)))))))
-
-    (testing "user is already confirmed"
-      (let [user (create-confirmed-test-user)
-            result (models/update-confirmation-token *txn* (:email user))
-            unchanged-user (first (jdbc/query *txn* ["SELECT * FROM users WHERE email=?" (:email user)]))]
-        (testing "returns nil"
-          (is (nil? result)))
-        (testing "does not change token"
-          (is (nil? (:confirmation_token unchanged-user))))
-        (testing "does not change expiry"
-          (is (nil? (:confirmation_token_expires_at unchanged-user))))))
-
-    (testing "email cannot be found"
-      (is (nil? (models/update-confirmation-token *txn* "no-such-email@example.com"))))))
+  (testing "failed update"
+    (stubbing [q/update-user-confirmation-token! [0]]
+      (is (nil? (models/update-confirmation-token "jdoe@example.com"))))))
 
 (deftest authenticate-user
   (let [confirmed-user (create-confirmed-test-user)

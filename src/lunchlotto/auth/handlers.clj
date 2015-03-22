@@ -62,7 +62,7 @@
   [req]
   (let [[valid? data] (val/validate-email (:params req))]
     (if valid?
-      (let [token (models/update-confirmation-token db (:email data))]
+      (let [token (models/update-confirmation-token (:email data))]
         (email/send-confirmation-email (:email data) token req)
         (response/redirect "/" (t [:flash :confirmation-sent])))
       (response/render :bad-request "auth/register"

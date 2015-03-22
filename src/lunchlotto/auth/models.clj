@@ -56,12 +56,13 @@
   "Updates a user's confirmation token and sets a new expiry. Assumes that the
   email address has already been validated. Returns the new token. Returns nil
   if the email could not be found or if the user has already been confirmed."
-  [db email]
+  [email]
   (let [[token expires] (utils/generate-token)]
     (when (= [1]
-           (jdbc/update! db :users {:confirmation_token (utils/digest token)
-                                    :confirmation_token_expires_at expires}
-                         ["is_confirmed=false AND email=?" email]))
+             (q/update-user-confirmation-token!
+               {:confirmation_token (utils/digest token)
+                :confirmation_token_expires_at expires
+                :email email}))
       token)))
 
 (defn authenticate-user
