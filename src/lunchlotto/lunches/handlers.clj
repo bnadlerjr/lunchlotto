@@ -1,13 +1,19 @@
 (ns lunchlotto.lunches.handlers
   (:require [clj-time.core :as time]
             [environ.core :refer [env]]
+            [gws.yelp.client :as client]
             [cemerick.friend :as friend])
   (:require [lunchlotto.common.responses :as response]
             [lunchlotto.lunches.models :as models]
             [lunchlotto.lunches.validations :as val]
-            [lunchlotto.services.venues :as venues]))
+            [lunchlotto.adapters.yelp :refer [->Yelp]]))
 
 (def db (env :database-url))
+
+(def yelp (->Yelp (client/create (env :yelp-consumer-key)
+                                 (env :yelp-consumer-secret)
+                                 (env :yelp-token)
+                                 (env :yelp-token-secret))))
 
 (def upcoming [{:status "Confirmed"
                 :attendees ["jdoe@cyrusinnovation.com"]
@@ -50,7 +56,9 @@
     "lunches/index"
     {:lunches upcoming
      :recommendation (models/make-recommendation
-                       db (:id (friend/current-authentication req)))}))
+                       db
+                       yelp
+                       (:id (friend/current-authentication req)))}))
 
 (defn create
   [req]

@@ -1,7 +1,7 @@
 (ns lunchlotto.lunches.models
   (:require [clojure.java.jdbc :as jdbc])
   (:require [lunchlotto.common.utils :as utils]
-            [lunchlotto.services.venues :as venues]))
+            [lunchlotto.protocols :as protocols]))
 
 (defn get-pairing
   [db user-id]
@@ -19,9 +19,9 @@
 
 (defn make-recommendation
   "Make a lunch recommendation."
-  [db user-id]
+  [db venues user-id]
   (let [[user buddy] (get-pairing db user-id)
         [latitude longitude] (calculate-venue-coords user buddy)]
     {:who-name (:email buddy)
      :who-id   (:id buddy)
-     :venues   (take 3 (shuffle (venues/find-venues latitude longitude)))}))
+     :venues   (take 3 (shuffle (protocols/find-by-location venues latitude longitude)))}))
