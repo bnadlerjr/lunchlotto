@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[bouncer "0.3.2" :exclusions [org.clojure/tools.reader]]
                  [clj-time "0.9.0"]
-                 [compojure "1.3.2"]
+                 [compojure "1.3.3"]
                  [crypto-password "0.1.3"]
                  [crypto-random "1.2.0"]
                  [environ "1.0.0"]
