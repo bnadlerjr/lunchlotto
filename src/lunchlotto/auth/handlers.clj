@@ -1,16 +1,28 @@
 (ns lunchlotto.auth.handlers
   (:require [environ.core :refer [env]]
-            [cemerick.friend :as friend])
+            [cemerick.friend :as friend]
+            [postmark.core :as pm])
   (:require [lunchlotto.auth.models :as models]
             [lunchlotto.common.responses :as response]
             [lunchlotto.auth.validations :as val]
             [lunchlotto.common.utils :as utils]
-            [lunchlotto.auth.email :as email]))
+            [lunchlotto.adapters.postmark :refer [->Postmark]]
+            [lunchlotto.protocols :as protocols]))
 
 (def db (env :database-url))
 
 (def t (utils/make-translation-dictionary
          "resources/translations.edn" :en :auth))
+
+(def email (->Postmark (pm/postmark (env :postmark-api-key) (env :postmark-from))))
+
+(defn- build-confirmation-link
+  [token {:keys [:scheme :server-name :server-port]}]
+  (let [base-url (str (name scheme) "://" server-name)
+        uri (str "/confirm?confirmation_token=" token)]
+    (if (= 8080 server-port)
+      (str base-url uri)
+      (str base-url ":" server-port uri))))
 
 (defn show-registration-page
   "Show the new user registration page."
@@ -54,7 +66,7 @@
                                           :can_resend_token? true})})
           :else
           (let [token (models/register-user (:email data))]
-            (email/send-confirmation-email (:email data) token req)
+            (protocols/send-confirmation-token email (:email data) (build-confirmation-link token req))
             (response/redirect "/" (t [:flash :confirmation-sent]))))))
 
 (defn update-confirmation-token
@@ -63,7 +75,7 @@
   (let [[valid? data] (val/validate-email (:params req))]
     (if valid?
       (let [token (models/update-confirmation-token (:email data))]
-        (email/send-confirmation-email (:email data) token req)
+        (protocols/send-confirmation-token email (:email data) (build-confirmation-link token req))
         (response/redirect "/" (t [:flash :confirmation-sent])))
       (response/render :bad-request "auth/register"
                        {:user (assoc-in data [:errors :can_resend_token?] true)}))))
